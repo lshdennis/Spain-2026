@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spain Trip 2026 | 🇪🇸</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #F8F8F6; color: #333; -webkit-tap-highlight-color: transparent; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); border: 1px solid rgba(230, 230, 225, 0.6); }
+        .tag-food { background: #F1F5E9; color: #62724D; }
+        .tag-spot { background: #E9F1F5; color: #4D6272; }
+        .tag-transport { background: #F5E9E9; color: #724D4D; }
+        .tag-info { background: #FAF3E0; color: #856404; }
+        ::-webkit-scrollbar { display: none; }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+</head>
+<body>
+    <div id="app" class="max-w-md mx-auto min-h-screen relative shadow-lg bg-white">
+        <header class="sticky top-0 z-50 glass-card px-6 py-5 flex justify-between items-end">
+            <div>
+                <h1 class="text-xs tracking-[0.3em] text-gray-400 font-light uppercase">Personal Itinerary</h1>
+                <p class="text-xl font-medium tracking-tight">Spain 2026</p>
+            </div>
+            <div class="text-[10px] text-gray-400 text-right">
+                04.04 — 04.12<br>BCN · MAD
+            </div>
+        </header>
+
+        <main class="px-5 py-6 pb-24">
+            <div v-if="activeTab === 'itinerary'">
+                <div v-for="(day, index) in schedule" :key="index" class="mb-12">
+                    <div class="flex justify-between items-baseline mb-6 sticky top-20 bg-white/90 py-2 z-40">
+                        <div class="flex items-baseline">
+                            <span class="text-3xl font-light text-gray-200 mr-3 italic">{{day.dayNum}}</span>
+                            <h2 class="text-lg font-medium">{{day.date}} <span class="text-gray-400 font-light ml-2">/ {{day.city}}</span></h2>
+                        </div>
+                        <div class="text-[10px] text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                            🌡️ {{day.weather}}
+                        </div>
+                    </div>
+
+                    <div v-for="item in day.events" :key="item.title" class="glass-card rounded-2xl p-5 mb-5 transition-active active:scale-[0.98]">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-[10px] font-medium text-gray-400 tracking-wider">{{item.time}}</span>
+                            <span :class="['text-[10px] px-2 py-0.5 rounded-full tracking-widest uppercase', getTagClass(item.type)]">
+                                {{item.type}}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-md font-medium mb-2">{{item.title}}</h3>
+                        
+                        <div class="text-xs text-gray-500 leading-relaxed space-y-2 mb-4">
+                            <p v-html="item.desc"></p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span v-if="item.mustEat" class="text-[10px] font-medium text-rose-500 bg-rose-50 px-2 py-1 rounded">必吃：{{item.mustEat}}</span>
+                            <span v-if="item.bookingId" class="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">預約：{{item.bookingId}}</span>
+                            <span v-if="item.tip" class="text-[10px] font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded">💡 {{item.tip}}</span>
+                        </div>
+
+                        <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.title + ' ' + day.city)" 
+                           target="_blank" 
+                           class="flex items-center text-[10px] text-gray-400 border-t pt-3 border-gray-100">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                            查看地圖與距離
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else class="space-y-6">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Emergency / Info</h3>
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between"><span>通用報警</span><span class="font-medium">112</span></div>
+                        <div class="flex justify-between"><span>駐西班牙代表處</span><span class="font-medium">+34 915 139 203</span></div>
+                        <div class="border-t border-gray-100 pt-4">
+                            <p class="text-[11px] text-gray-400 mb-1 font-medium">BARCELONA STAY</p>
+                            <p class="text-xs leading-relaxed">Aparthotel Mariano Cubi<br>Carrer de Mariano Cubí, 62</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Budget Tracker (EUR)</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between text-gray-400"><span>預算</span><span>€1,500</span></div>
+                        <div class="flex justify-between text-gray-400"><span>預估固定支出</span><span>€850</span></div>
+                        <div class="flex justify-between font-medium text-lg pt-2 border-t border-gray-100">
+                            <span>剩餘可用</span><span>€650</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="fixed bottom-0 max-w-md w-full glass-card flex justify-around py-4 safe-area-bottom border-t border-gray-100 z-50">
+            <button @click="activeTab = 'itinerary'" :class="activeTab === 'itinerary' ? 'text-gray-900' : 'text-gray-300'" class="transition-colors">
+                <p class="text-[10px] font-medium tracking-widest uppercase">Itinerary</p>
+            </button>
+            <button @click="activeTab = 'tools'" :class="activeTab === 'tools' ? 'text-gray-900' : 'text-gray-300'" class="transition-colors">
+                <p class="text-[10px] font-medium tracking-widest uppercase">Tools & Info</p>
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        createApp({
+            setup() {
+                const activeTab = ref('itinerary');
+                const schedule = ref([
+                    {
+                        dayNum: '01', date: '04.04 Sat', city: 'Barcelona', weather: '18°C 晴時多雲',
+                        events: [
+                            { time: '09:00', type: 'spot', title: '聖家堂 Sagrada Família', bookingId: '入場 09:00 / 登塔 09:15', desc: '高第的巔峰之作。<b>攻略：</b>誕生立面早晨光影最美，務必準時。', tip: '需持實體/電子票' },
+                            { time: '13:00', type: 'food', title: 'Madre - Taberna Moderna', mustEat: '勇氣馬鈴薯', desc: '聖家堂步行5分鐘。高品質在地 Tapas，避開觀光地雷。' },
+                            { time: '16:00', type: 'spot', title: '巴特略之家 Casa Batlló', desc: '<b>故事：</b>龍脊屋頂與海洋世界。', tip: '建議 Blue 門票含 AR 導覽' },
+                            { time: '18:30', type: 'food', title: 'Vinitus', mustEat: '鱈魚蜂蜜、牛排三明治', desc: '格拉西亞大道名店。不可訂位，建議早點去排隊。' }
+                        ]
+                    },
+                    {
+                        dayNum: '02', date: '04.05 Sun', city: 'Barcelona', weather: '17°C 復活節',
+                        events: [
+                            { time: '10:00', type: 'spot', title: '畢卡索博物館 & Labperfum', desc: '<b>攻略：</b>4/1 官網搶免費票。順路逛 <b>Labperfum</b> 買在地香水。' },
+                            { time: '13:30', type: 'food', title: '7 Portes 七道門', mustEat: 'Paella Parellada (海鮮飯)', desc: '百年老店，復活節連假強烈建議預約。' },
+                            { time: '18:00', type: 'spot', title: '焦糖山 Bunkers拍照', desc: '360度城市全景。聖家堂會在腳下。' },
+                            { time: '18:30', type: 'info', title: '🌅 日落野餐：Mirador de Joan Sales', mustEat: '火腿、Cava 氣泡酒', desc: '<b>日落預計 20:15。</b><br>18:30 清場後撤退至下方平台，邊野餐邊等藍調時刻。' }
+                        ]
+                    },
+                    {
+                        dayNum: '03', date: '04.06 Mon', city: 'Barcelona', weather: '18°C 微風',
+                        events: [
+                            { time: '09:00', type: 'spot', title: '奎爾公園 Park Güell', desc: '拍著名的蜥蜴與碎瓷磚。', tip: '官網預約早場避人潮' },
+                            { time: '13:00', type: 'food', title: '波蓋利亞市場 El Quim', mustEat: '小章魚煎蛋', desc: '體驗傳統市場魅力。' },
+                            { time: '16:00', type: 'spot', title: '蒙特惠奇山纜車', desc: '視體力前往。俯瞰海港風光。', tip: '若累了改去蘭布拉大道' }
+                        ]
+                    },
+                    {
+                        dayNum: '04', date: '04.07 Tue', city: 'Moving', weather: '19°C',
+                        events: [
+                            { time: '14:50', type: 'transport', title: 'iryo 高鐵前往馬德里', bookingId: 'iryo 班次確認', desc: '17:30 抵達 Madrid Atocha。' },
+                            { time: '19:00', type: 'food', title: '太陽門廣場 Sol', mustEat: '炸魷魚三明治', desc: '馬德里必嚐平民美食。' }
+                        ]
+                    },
+                    {
+                        dayNum: '05', date: '04.08 Wed', city: 'Madrid', weather: '20°C',
+                        events: [
+                            { time: '09:30', type: 'spot', title: '馬德里王宮 Palacio Real', desc: '奢華壯觀的王室居所。', tip: '需提前預約' },
+                            { time: '15:00', type: 'spot', title: '普拉多博物館 Prado', desc: '<b>攻略：</b>看委拉斯蓋茲《侍女》。' }
+                        ]
+                    },
+                    {
+                        dayNum: '06', date: '04.09 Thu', city: 'Segovia', weather: '15°C',
+                        events: [
+                            { time: '10:00', type: 'spot', title: '塞哥維亞水道橋', desc: '兩千年歷史世界遺產。' },
+                            { time: '13:00', type: 'food', title: 'Mesón de Cándido', mustEat: '烤乳豬 Cochinillo', desc: '<b>必點：</b>百年老店表演切乳豬。', tip: '務必兩週前預約' }
+                        ]
+                    },
+                    {
+                        dayNum: '07', date: '04.10 Fri', city: 'Toledo', weather: '16°C',
+                        events: [
+                            { time: '11:00', type: 'spot', title: '托雷多古城', desc: '西班牙中世紀首都。' },
+                            { time: '18:00', type: 'spot', title: 'Mirador del Valle', desc: '拍絕美托雷多全景夕陽。' }
+                        ]
+                    },
+                    {
+                        dayNum: '08', date: '04.11 Sat', city: 'Madrid', weather: '19°C',
+                        events: [
+                            { time: '11:00', type: 'food', title: '聖米格爾市場', mustEat: '各式 Tapas 串', desc: '玻璃屋高級市場。' },
+                            { time: '20:00', type: 'spot', title: '佛朗明哥舞表演', desc: '最後一夜的熱情告別。', tip: '建議預約 Cardamomo' }
+                        ]
+                    },
+                    {
+                        dayNum: '09', date: '04.12 Sun', city: 'Departure', weather: '20°C',
+                        events: [
+                            { time: '09:30', type: 'spot', title: 'El Rastro 跳蚤市場', desc: '週日限定。<b>必買：</b>皮製品、古物。', tip: '小心扒手' },
+                            { time: '12:00', type: 'food', title: 'San Ginés 吉拿棒', mustEat: '熱巧克力吉拿棒', desc: '百年老店最後巡禮。' }
+                        ]
+                    }
+                ]);
+
+                const getTagClass = (type) => {
+                    if (type === 'food') return 'tag-food';
+                    if (type === 'spot') return 'tag-spot';
+                    if (type === 'transport') return 'tag-transport';
+                    return 'tag-info';
+                };
+
+                return { activeTab, schedule, getTagClass };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
