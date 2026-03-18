@@ -15,7 +15,17 @@
         .tag-spot { background: #E9F1F5; color: #4D6272; }
         .tag-transport { background: #F5E9E9; color: #724D4D; }
         ::-webkit-scrollbar { display: none; }
-        .map-placeholder { background: #eee url('https://www.google.com/maps/vt/pb=!1m4!1m3!1i13!2i4194!3i2762!2m3!1e0!2sm!3i407105169!3m8!2szh-TW!3sus!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0!23i4111425') center/cover; }
+
+        /* 天氣動畫 */
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .sun-icon { animation: rotate 10s linear infinite; color: #F59E0B; font-size: 1.2rem; }
+        .cloud-anim { animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+        /* 路線簡圖樣式 */
+        .route-map { background: #EEEEEA; border-radius: 16px; position: relative; overflow: hidden; height: 100px; }
+        .dot { position: absolute; width: 6px; height: 6px; background: #8E9775; border-radius: 50%; }
+        .line { position: absolute; border-top: 1px dashed #8E9775; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -24,7 +34,10 @@
         <header class="sticky top-0 z-50 glass-card">
             <div class="px-6 py-4 flex justify-between items-center">
                 <h1 class="text-lg font-medium tracking-tight">Spain 2026</h1>
-                <div class="text-[10px] text-gray-400">MU5006 / MU249 / MU710 / FM801</div>
+                <div v-if="currentDayIndex !== 'info'" class="flex items-center space-x-2">
+                    <span :class="schedule[currentDayIndex].weatherIcon === '☀️' ? 'sun-icon inline-block' : 'cloud-anim inline-block'">{{schedule[currentDayIndex].weatherIcon}}</span>
+                    <span class="text-xs font-medium text-gray-500">{{schedule[currentDayIndex].weatherTemp}}°C</span>
+                </div>
             </div>
             
             <div class="flex overflow-x-auto px-4 pb-2 gap-6 text-sm text-gray-400 no-scrollbar">
@@ -35,7 +48,7 @@
                 </button>
                 <button @click="currentDayIndex = 'info'" 
                         :class="['whitespace-nowrap pb-2 px-1', currentDayIndex === 'info' ? 'tab-active' : '']">
-                    機票/住宿
+                    資訊/清單
                 </button>
             </div>
         </header>
@@ -43,69 +56,75 @@
         <main class="px-5 py-6 pb-24">
             
             <div v-if="currentDayIndex !== 'info'">
-                <div class="mb-6">
+                <div class="mb-4">
                     <h2 class="text-2xl font-light mb-1">{{schedule[currentDayIndex].date}}</h2>
-                    <p class="text-xs text-gray-400 uppercase tracking-widest">{{schedule[currentDayIndex].city}} · {{schedule[currentDayIndex].weather}}</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-widest">{{schedule[currentDayIndex].city}}</p>
                 </div>
 
-                <div class="w-full h-32 rounded-2xl mb-6 map-placeholder flex items-center justify-center overflow-hidden relative">
-                    <div class="absolute inset-0 bg-black/10"></div>
-                    <a :href="'https://www.google.com/maps/search/' + schedule[currentDayIndex].city" target="_blank" class="glass-card px-4 py-2 rounded-full text-[10px] font-medium z-10">開啟當日地圖路線</a>
+                <div class="route-map mb-6 flex items-center justify-center">
+                    <div class="text-[10px] text-gray-400 uppercase tracking-widest absolute top-2 left-4">Route Preview</div>
+                    <div class="flex items-center space-x-8">
+                        <div class="text-center">
+                            <div class="w-2 h-2 bg-gray-300 rounded-full mx-auto mb-1"></div>
+                            <span class="text-[8px] text-gray-400">{{schedule[currentDayIndex].points[0]}}</span>
+                        </div>
+                        <div class="w-12 border-t border-dashed border-gray-300"></div>
+                        <div class="text-center">
+                            <div class="w-2 h-2 bg-gray-800 rounded-full mx-auto mb-1"></div>
+                            <span class="text-[8px] text-gray-600 font-bold">{{schedule[currentDayIndex].points[1]}}</span>
+                        </div>
+                        <div v-if="schedule[currentDayIndex].points[2]" class="w-12 border-t border-dashed border-gray-300"></div>
+                        <div v-if="schedule[currentDayIndex].points[2]" class="text-center">
+                            <div class="w-2 h-2 bg-gray-300 rounded-full mx-auto mb-1"></div>
+                            <span class="text-[8px] text-gray-400">{{schedule[currentDayIndex].points[2]}}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div v-for="item in schedule[currentDayIndex].events" :key="item.title" class="glass-card rounded-2xl p-5 mb-4">
+                <div v-for="item in schedule[currentDayIndex].events" :key="item.title" class="glass-card rounded-2xl p-5 mb-4 shadow-sm">
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-[10px] font-medium text-gray-400">{{item.time}}</span>
                         <span :class="['text-[10px] px-2 py-0.5 rounded-full uppercase tracking-tighter', getTagClass(item.type)]">{{item.type}}</span>
                     </div>
-                    <h3 class="text-md font-medium mb-2">{{item.title}}</h3>
+                    <h3 class="text-md font-medium mb-1">{{item.title}}</h3>
                     <p class="text-xs text-gray-500 leading-relaxed mb-4" v-html="item.desc"></p>
                     
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span v-if="item.mustEat" class="text-[10px] font-medium text-rose-500 bg-rose-50 px-2 py-1 rounded">必吃：{{item.mustEat}}</span>
+                    <div class="flex flex-wrap gap-2">
+                        <span v-if="item.mustEat" class="text-[10px] font-medium text-rose-500 bg-rose-50 px-2 py-1 rounded">必點：{{item.mustEat}}</span>
                         <span v-if="item.bookingId" class="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">✅ {{item.bookingId}}</span>
+                        <a v-if="item.map" :href="item.map" target="_blank" class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">📍 Google Map</a>
                     </div>
-
-                    <a :href="'https://www.google.com/maps/search/' + encodeURIComponent(item.title + ' ' + schedule[currentDayIndex].city)" target="_blank" class="text-[10px] text-gray-400 border-t pt-3 flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                        導航至此
-                    </a>
                 </div>
             </div>
 
             <div v-else class="space-y-6">
                 <section class="glass-card rounded-2xl p-6">
-                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase italic">Flight Schedule</h3>
-                    <div class="space-y-4">
-                        <div v-for="f in flights" class="flex justify-between items-center border-b border-gray-50 pb-2">
-                            <span class="text-xs font-medium">{{f.route}}</span>
-                            <span class="text-xs text-gray-500 font-mono">{{f.no}}</span>
-                        </div>
+                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Flights</h3>
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="flex justify-between border-b pb-2"><span>TPE ➔ PVG</span><span>MU5006</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>PVG ➔ BCN</span><span>MU249</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>MAD ➔ PVG</span><span>MU710</span></div>
+                        <div class="flex justify-between pb-2"><span>PVG ➔ TSA</span><span>FM801</span></div>
                     </div>
                 </section>
 
                 <section class="glass-card rounded-2xl p-6">
-                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase italic">Accommodation</h3>
-                    <div class="space-y-6">
-                        <div>
-                            <p class="text-[10px] text-blue-500 font-bold mb-1">4/3 - 4/7 · BARCELONA</p>
+                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Stay</h3>
+                    <div class="space-y-4">
+                        <div class="border-l-2 border-blue-200 pl-4">
+                            <p class="text-[10px] text-blue-400 font-bold">BARCELONA (4/3-4/7)</p>
                             <p class="text-sm font-medium">Aparthotel Mariano Cubi</p>
-                            <p class="text-[10px] text-gray-400">Carrer de Mariano Cubí, 62, 08006 Barcelona</p>
+                            <p class="text-[10px] text-gray-400">Carrer de Mariano Cubí, 62</p>
                         </div>
-                        <div class="border-t pt-4">
-                            <p class="text-[10px] text-red-500 font-bold mb-1">4/7 - 4/12 · MADRID</p>
-                            <p class="text-sm font-medium">Chamberí Apartment</p>
-                            <p class="text-[10px] text-gray-400 leading-relaxed">Calle General Álvarez de Castro, 16, 28010 Madrid</p>
+                        <div class="border-l-2 border-red-200 pl-4">
+                            <p class="text-[10px] text-red-400 font-bold">MADRID (4/7-4/12)</p>
+                            <p class="text-sm font-medium">Chamberí Apt.</p>
+                            <p class="text-[10px] text-gray-400">Calle General Álvarez de Castro, 16</p>
                         </div>
                     </div>
                 </section>
             </div>
         </main>
-
-        <footer class="fixed bottom-0 max-w-md w-full glass-card flex justify-around py-5 border-t border-gray-100 z-50">
-            <button @click="currentDayIndex = 0" class="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-800">Home</button>
-            <button @click="currentDayIndex = 'info'" class="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">Details</button>
-        </footer>
     </div>
 
     <script>
@@ -113,55 +132,52 @@
         createApp({
             setup() {
                 const currentDayIndex = ref(0);
-                const flights = ref([
-                    { route: 'TPE ➔ PVG', no: 'MU5006' },
-                    { route: 'PVG ➔ BCN', no: 'MU249' },
-                    { route: 'MAD ➔ PVG', no: 'MU710' },
-                    { route: 'PVG ➔ TSA', no: 'FM801' }
-                ]);
                 const schedule = ref([
                     {
-                        date: '04.04 Sat', city: 'Barcelona', weather: '18°C',
+                        date: '04.02 Thu', city: 'Departure / PVG', weatherTemp: 14, weatherIcon: '☁️',
+                        points: ['TPE', 'PVG', 'Air'],
                         events: [
-                            { time: '09:00', type: 'spot', title: '聖家堂 Sagrada Família', bookingId: '入場 09:00 / 登塔 09:15', desc: '<b>重點：</b>誕生立面光影。' },
-                            { time: '13:00', type: 'food', title: 'Madre - Taberna Moderna', mustEat: '勇氣馬鈴薯', desc: '高品質在地 Tapas。' },
-                            { time: '18:30', type: 'food', title: 'Vinitus', mustEat: '鱈魚蜂蜜', desc: '熱門排隊店，建議 17:30 抵達。' }
+                            { time: '18:40', type: 'flight', title: 'TPE ➔ PVG (MU5006)', desc: '出發前往上海轉機。' }
                         ]
                     },
                     {
-                        date: '04.05 Sun', city: 'Barcelona', weather: '17°C 復活節',
+                        date: '04.03 Fri', city: 'Barcelona', weatherTemp: 16, weatherIcon: '🌤️',
+                        points: ['PVG', 'BCN', 'Stay'],
                         events: [
-                            { time: '10:00', type: 'spot', title: '畢卡索博物館 & Labperfum', desc: '4/1 搶免費票。買香水。' },
-                            { time: '13:30', type: 'food', title: '7 Portes 七道門', mustEat: '海鮮飯', desc: '百年老店，務必預約。' },
-                            { time: '18:30', type: 'info', title: '焦糖山 Bunkers 日落', desc: '18:30清場，撤至下方 Mirador 享用野餐。' }
+                            { time: '00:15', type: 'flight', title: 'PVG ➔ BCN (MU249)', desc: '長途飛行，預計 08:00 抵達巴塞隆納。' },
+                            { time: '10:00', type: 'info', title: 'Check-in Mariano Cubi', desc: '放行李，稍作休息。' }
                         ]
                     },
                     {
-                        date: '04.06 Mon', city: 'Barcelona', weather: '18°C',
+                        date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18, weatherIcon: '☀️',
+                        points: ['Stay', 'Sagrada', 'Vinitus'],
                         events: [
-                            { time: '09:30', type: 'spot', title: '奎爾公園 Park Güell', bookingId: '已預定 09:30', desc: '拍彩色大蜥蜴與百柱廳。' },
-                            { time: '13:00', type: 'food', title: '波蓋利亞市場', mustEat: '小章魚煎蛋', desc: '美食巡禮。' }
+                            { time: '09:00', type: 'spot', title: '聖家堂', bookingId: '入場 09:00 / 登塔 09:15', map: 'https://maps.app.goo.gl/YwY9Nn9G7ZpQZ9yJ8', desc: '<b>重點：</b>誕生立面光影。' },
+                            { time: '18:30', type: 'food', title: 'Vinitus', mustEat: '鱈魚蜂蜜', map: 'https://maps.app.goo.gl/U2U2U2U2U2U2U2U2U', desc: '熱門店，建議提前排隊。' }
                         ]
                     },
                     {
-                        date: '04.07 Tue', city: 'Moving', weather: '19°C',
+                        date: '04.05 Sun', city: 'Barcelona', weatherTemp: 17, weatherIcon: '🌤️',
+                        points: ['Gothic', 'Beach', 'Bunkers'],
                         events: [
-                            { time: '14:50', type: 'transport', title: 'iryo 高鐵前往馬德里', bookingId: '06150 (Sants-Atocha)', desc: '車次：06150 / 14:50 - 17:30。' },
-                            { time: '18:30', type: 'info', title: '入住馬德里民宿', desc: 'Calle General Álvarez de Castro, 16' }
+                            { time: '10:00', type: 'spot', title: '畢卡索博物館', desc: '4/1 搶免費票。', map: 'https://maps.app.goo.gl/ PicassoBCN' },
+                            { time: '18:30', type: 'info', title: '焦糖山 Bunkers 日落', desc: '18:30清場，移至下方野餐。' }
                         ]
                     },
                     {
-                        date: '04.09 Thu', city: 'Segovia', weather: '15°C',
+                        date: '04.06 Mon', city: 'Barcelona', weatherTemp: 19, weatherIcon: '☀️',
+                        points: ['Güell', 'Boqueria', 'Montjuïc'],
                         events: [
-                            { time: '11:00', type: 'spot', title: '塞哥維亞水道橋', desc: '兩千年歷史遺產。' },
-                            { time: '13:00', type: 'food', title: 'Mesón de Cándido', mustEat: '烤乳豬', desc: '百年老店，務必兩週前預約。' }
+                            { time: '09:30', type: 'spot', title: '奎爾公園 Park Güell', bookingId: '已預定 09:30', map: 'https://maps.app.goo.gl/GuellBCN', desc: '高第的童話公園。' },
+                            { time: '13:00', type: 'food', title: '波蓋利亞市場', mustEat: '小章魚煎蛋', desc: '市場美食。' }
                         ]
                     },
                     {
-                        date: '04.12 Sun', city: 'Departure', weather: '20°C',
+                        date: '04.07 Tue', city: 'Madrid', weatherTemp: 18, weatherIcon: '🌤️',
+                        points: ['Sants', 'Atocha', 'Stay'],
                         events: [
-                            { time: '09:30', type: 'spot', title: 'El Rastro 市集', desc: '週日限定，全歐最大跳蚤市場。' },
-                            { time: '12:00', type: 'food', title: 'San Ginés 吉拿棒', mustEat: '熱巧克力吉拿棒', desc: '最後巡禮。' }
+                            { time: '14:50', type: 'transport', title: 'iryo 高鐵 (06150)', bookingId: 'BCN-Sants ➔ MAD-Atocha', desc: '14:50 - 17:30。' },
+                            { time: '18:30', type: 'info', title: '入住 Madrid 民宿', desc: 'Calle General Álvarez de Castro, 16' }
                         ]
                     }
                 ]);
@@ -169,11 +185,11 @@
                 const getTagClass = (type) => {
                     if (type === 'food') return 'tag-food';
                     if (type === 'spot') return 'tag-spot';
-                    if (type === 'transport') return 'tag-transport';
+                    if (type === 'transport' || type === 'flight') return 'tag-transport';
                     return 'tag-info';
                 };
 
-                return { currentDayIndex, flights, schedule, getTagClass };
+                return { currentDayIndex, schedule, getTagClass };
             }
         }).mount('#app');
     </script>
