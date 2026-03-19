@@ -13,13 +13,13 @@
         .tab-active { color: #1a1a1a; font-weight: 500; border-bottom: 2px solid #1a1a1a; }
         .tag-food { background: #F1F5E9; color: #62724D; }
         .tag-spot { background: #E9F1F5; color: #4D6272; }
-        .tag-pack { background: #FFF4E5; color: #B07D48; }
+        .tag-transport { background: #F5E9E9; color: #724D4D; }
         ::-webkit-scrollbar { display: none; }
 
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .sun-icon { animation: rotate 10s linear infinite; color: #F59E0B; }
         
-        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease; max-height: 500px; opacity: 1; }
+        .expand-enter-active, .expand-leave-active { transition: all 0.3s ease; max-height: 800px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; overflow: hidden; }
         
         .map-box { width: 100%; height: 180px; background: #EEE; border-radius: 16px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; border: 1px dashed #CCC; }
@@ -39,6 +39,7 @@
             <div class="flex overflow-x-auto px-4 pb-2 gap-6 text-sm text-gray-400 no-scrollbar">
                 <button v-for="(day, i) in schedule" :key="i" @click="setTab('itinerary', i)" :class="activeTab==='itinerary'&&currentDayIndex===i?'tab-active':''" class="whitespace-nowrap pb-1">{{day.date.split(' ')[0]}}</button>
                 <button @click="activeTab='packing'" :class="activeTab==='packing'?'tab-active':''" class="whitespace-nowrap pb-1">行李備忘</button>
+                <button @click="activeTab='info'" :class="activeTab==='info'?'tab-active':''" class="whitespace-nowrap pb-1">航班住宿</button>
             </div>
         </header>
 
@@ -50,8 +51,8 @@
                 </div>
                 <div class="map-box mb-6">
                     <img :src="schedule[currentDayIndex].mapImg" @error="mapError" class="map-img" alt="Map">
-                    <div class="absolute inset-0 flex items-center justify-center text-[10px] text-gray-400 pointer-events-none" v-if="mapHasError">
-                        [ 尚未偵測到地圖檔：{{schedule[currentDayIndex].mapImg}} ]
+                    <div class="absolute inset-0 flex items-center justify-center text-[10px] text-gray-400 p-4 text-center" v-if="mapHasError">
+                        [ 尚未偵測到地圖檔：{{schedule[currentDayIndex].mapImg}} ]<br>請上傳圖片至 GitHub 同目錄
                     </div>
                 </div>
                 <div v-for="(item, idx) in schedule[currentDayIndex].events" :key="idx" class="glass-card rounded-2xl p-5 mb-4 shadow-sm overflow-hidden">
@@ -76,15 +77,44 @@
             </div>
 
             <div v-else-if="activeTab === 'packing'" class="space-y-6">
-                <div v-for="cat in packingList" :key="cat.name" class="glass-card rounded-2xl p-6">
+                <div v-for="cat in packingList" :key="cat.name" class="glass-card rounded-2xl p-6 shadow-sm">
                     <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic">{{cat.name}}</h3>
-                    <div class="space-y-3">
-                        <div v-for="item in cat.items" :key="item.text" class="flex items-center space-x-3">
-                            <input type="checkbox" v-model="item.checked" class="w-4 h-4 accent-gray-800 rounded">
+                    <div class="space-y-4">
+                        <div v-for="item in cat.items" @click="item.checked = !item.checked" class="flex items-center space-x-3 cursor-pointer">
+                            <div class="w-4 h-4 border border-gray-300 rounded flex items-center justify-center">
+                                <div v-if="item.checked" class="w-2 h-2 bg-gray-800 rounded-sm"></div>
+                            </div>
                             <span :class="item.checked ? 'line-through text-gray-300' : 'text-sm text-gray-600'">{{item.text}}</span>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div v-else-if="activeTab === 'info'" class="space-y-6">
+                <section class="glass-card rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic">Flight Schedule</h3>
+                    <div class="space-y-3 text-xs font-mono">
+                        <div class="flex justify-between border-b pb-2"><span>TPE ➔ PVG</span><span>MU5006</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>PVG ➔ BCN</span><span>MU249</span></div>
+                        <div class="flex justify-between border-b pb-2"><span>MAD ➔ PVG</span><span>MU710</span></div>
+                        <div class="flex justify-between pb-2 text-rose-400"><span>PVG ➔ TSA</span><span>FM801</span></div>
+                    </div>
+                </section>
+                <section class="glass-card rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic">Stay</h3>
+                    <div class="space-y-6">
+                        <div class="border-l-2 border-blue-200 pl-4">
+                            <p class="text-[10px] text-blue-400 font-bold">BCN (4/3-4/7)</p>
+                            <p class="text-sm font-medium">Aparthotel Mariano Cubi</p>
+                            <p class="text-[10px] text-gray-400">Carrer de Mariano Cubí, 62</p>
+                        </div>
+                        <div class="border-l-2 border-red-200 pl-4">
+                            <p class="text-[10px] text-red-400 font-bold">MAD (4/7-4/12)</p>
+                            <p class="text-sm font-medium">Chamberí Apt.</p>
+                            <p class="text-[10px] text-gray-400">Calle General Álvarez de Castro, 16</p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -97,34 +127,40 @@
                 const currentDayIndex = ref(0);
                 const mapHasError = ref(false);
 
-                const setTab = (tab, idx) => { activeTab.value = tab; currentDayIndex.value = idx; mapHasError.value = false; };
+                const setTab = (tab, idx) => { 
+                    activeTab.value = tab; 
+                    if (tab === 'itinerary') currentDayIndex.value = idx;
+                    mapHasError.value = false;
+                };
                 const mapError = () => { mapHasError.value = true; };
 
                 const schedule = ref([
-                    {
-                        date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18,
-                        mapImg: '0404.jpg',
-                        points: ['飯店', '聖家堂', 'Vinitus'],
-                        events: [
-                            { time: '09:00', title: '聖家堂登塔', expanded: false, bookingId: '09:00 入場', mapUrl: 'https://maps.google.com', desc: '<b>登塔攻略：</b>建議搭電梯上、走樓梯下。' },
-                            { time: '18:30', title: 'Vinitus 晚餐', expanded: false, mustEat: '鱈魚蜂蜜', desc: '不可訂位，建議 17:30 前到。' }
-                        ]
-                    },
-                    {
-                        date: '04.06 Mon', city: 'Barcelona', weatherTemp: 19,
-                        mapImg: '0406.jpg',
-                        points: ['飯店', '奎爾公園', '市場'],
-                        events: [
-                            { time: '09:30', title: '奎爾公園', expanded: false, bookingId: '已預定 09:30', desc: '拍大蜥蜴最好的位置在百柱廳上方。' }
-                        ]
-                    }
+                    { date: '04.02 Thu', city: 'Departure', weatherTemp: 14, mapImg: '0402.jpg', events: [{ time: '18:40', title: 'TPE ➔ PVG (MU5006)', desc: '台灣出發，上海轉機。', expanded: false }] },
+                    { date: '04.03 Fri', city: 'Barcelona', weatherTemp: 16, mapImg: '0403.jpg', events: [{ time: '08:00', title: '抵達 BCN (MU249)', desc: '前往 Mariano Cubi 飯店放行李。', expanded: false }] },
+                    { date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18, mapImg: '0404.jpg', events: [
+                        { time: '09:00', title: '聖家堂登塔', bookingId: '09:00 入場', desc: '誕生立面。', expanded: false, mapUrl: 'https://maps.app.goo.gl/聖家堂' },
+                        { time: '18:30', title: 'Vinitus 晚餐', mustEat: '鱈魚蜂蜜', desc: '超人氣 Tapas。', expanded: false }
+                    ]},
+                    { date: '04.05 Sun', city: 'Barcelona', weatherTemp: 17, mapImg: '0405.jpg', events: [{ time: '18:00', title: '焦糖山日落', desc: '360度城市全景。', expanded: false }] },
+                    { date: '04.06 Mon', city: 'Barcelona', weatherTemp: 19, mapImg: '0406.jpg', events: [{ time: '09:30', title: '奎爾公園', bookingId: '已預定 09:30', desc: '彩色大蜥蜴。', expanded: false }] },
+                    { date: '04.07 Tue', city: 'Madrid', weatherTemp: 18, mapImg: '0407.jpg', events: [{ time: '14:50', title: 'iryo 高鐵 (06150)', desc: 'Barcelona-Sants ➔ Madrid-Atocha。', expanded: false }] },
+                    { date: '04.08 Wed', city: 'Madrid', weatherTemp: 17, mapImg: '0408.jpg', events: [{ time: '10:00', title: '普拉多博物館', desc: '世界三大美術館之一。', expanded: false }] },
+                    { date: '04.09 Thu', city: 'Segovia', weatherTemp: 15, mapImg: '0409.jpg', events: [
+                        { time: '10:00', title: '羅馬水道橋', desc: '兩千年歷史遺蹟。', expanded: false },
+                        { time: '13:00', title: 'Mesón de Cándido', mustEat: '烤乳豬', desc: '必吃百年老店。', expanded: false }
+                    ]},
+                    { date: '04.10 Fri', city: 'Madrid', weatherTemp: 18, mapImg: '0410.jpg', events: [{ time: '15:00', title: '麗池公園', desc: '水晶宮拍照。', expanded: false }] },
+                    { date: '04.11 Sat', city: 'Madrid', weatherTemp: 19, mapImg: '0411.jpg', events: [{ time: '10:00', title: '馬德里王宮', desc: '壯麗的波旁王朝宮殿。', expanded: false }] },
+                    { date: '04.12 Sun', city: 'Departure', weatherTemp: 20, mapImg: '0412.jpg', events: [
+                        { time: '09:30', title: 'El Rastro 市集', desc: '週日限定跳蚤市場。', expanded: false },
+                        { time: '21:00', title: 'MAD ➔ PVG (MU710)', desc: '前往機場搭機回程。', expanded: false }
+                    ]}
                 ]);
 
                 const packingList = ref([
-                    { name: '證件錢包', items: [{text:'護照', checked:false}, {text:'歐元現金', checked:false}, {text:'雙幣信用卡', checked:false}] },
-                    { name: '電子設備', items: [{text:'萬用轉接頭', checked:false}, {text:'行動電源', checked:false}, {text:'相機記憶卡', checked:false}] },
-                    { name: '衣物藥品', items: [{text:'輕羽絨(早晚溫差)', checked:false}, {text:'止痛藥/腸胃藥', checked:false}] },
-                    { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'充氣枕', checked:false}] }
+                    { name: '證件財物', items: [{text:'護照/影本/簽證', checked:false}, {text:'歐元現金', checked:false}, {text:'雙幣信用卡', checked:false}] },
+                    { name: '電子設備', items: [{text:'萬用轉接頭', checked:false}, {text:'行動電源', checked:false}, {text:'相機/腳架', checked:false}] },
+                    { name: '個人用品', items: [{text:'輕羽絨/發熱衣', checked:false}, {text:'止痛/腸胃藥', checked:false}, {text:'拖鞋/充氣枕', checked:false}] }
                 ]);
 
                 return { activeTab, currentDayIndex, schedule, packingList, setTab, mapError, mapHasError };
