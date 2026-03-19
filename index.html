@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spain Trip 2026 | 🇪🇸</title>
+    <title>Spain Trip 2026 | 🇪🇸 日式極簡導遊</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@
         .tag-food { background: #F1F5E9; color: #62724D; }
         .tag-spot { background: #E9F1F5; color: #4D6272; }
         .tag-transport { background: #F5E9E9; color: #724D4D; }
+        .tag-shop { background: #FDEBD0; color: #935116; }
         ::-webkit-scrollbar { display: none; }
 
         /* 天氣動畫 */
@@ -22,10 +23,9 @@
         .cloud-anim { animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-        /* 路線簡圖樣式 */
-        .route-map { background: #EEEEEA; border-radius: 16px; position: relative; overflow: hidden; height: 100px; }
-        .dot { position: absolute; width: 6px; height: 6px; background: #8E9775; border-radius: 50%; }
-        .line { position: absolute; border-top: 1px dashed #8E9775; opacity: 0.5; }
+        /* 手繪地圖容器 */
+        .handdrawn-map { border-radius: 16px; overflow: hidden; height: 160px; background-color: #EEE; display: flex; align-items: center; justify-content: center; position: relative; }
+        .map-label { position: absolute; bottom: 8px; right: 12px; background: rgba(255,255,255,0.7); padding: 2px 6px; border-radius: 4px; font-size: 8px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; }
     </style>
 </head>
 <body>
@@ -34,7 +34,7 @@
         <header class="sticky top-0 z-50 glass-card">
             <div class="px-6 py-4 flex justify-between items-center">
                 <h1 class="text-lg font-medium tracking-tight">Spain 2026</h1>
-                <div v-if="currentDayIndex !== 'info'" class="flex items-center space-x-2">
+                <div v-if="activeTab === 'itinerary' && schedule[currentDayIndex]" class="flex items-center space-x-2">
                     <span :class="schedule[currentDayIndex].weatherIcon === '☀️' ? 'sun-icon inline-block' : 'cloud-anim inline-block'">{{schedule[currentDayIndex].weatherIcon}}</span>
                     <span class="text-xs font-medium text-gray-500">{{schedule[currentDayIndex].weatherTemp}}°C</span>
                 </div>
@@ -42,43 +42,30 @@
             
             <div class="flex overflow-x-auto px-4 pb-2 gap-6 text-sm text-gray-400 no-scrollbar">
                 <button v-for="(day, index) in schedule" :key="index" 
-                        @click="currentDayIndex = index"
-                        :class="['whitespace-nowrap pb-2 px-1 transition-all', currentDayIndex === index ? 'tab-active' : '']">
+                        @click="setDay(index)"
+                        :class="['whitespace-nowrap pb-2 px-1 transition-all', (activeTab === 'itinerary' && currentDayIndex === index) ? 'tab-active' : '']">
                     {{day.date.split(' ')[0]}}
                 </button>
-                <button @click="currentDayIndex = 'info'" 
-                        :class="['whitespace-nowrap pb-2 px-1', currentDayIndex === 'info' ? 'tab-active' : '']">
-                    資訊/清單
+                <button @click="activeTab = 'pockets'" 
+                        :class="['whitespace-nowrap pb-2 px-1', activeTab === 'pockets' ? 'tab-active' : '']">
+                    口袋名單
                 </button>
             </div>
         </header>
 
         <main class="px-5 py-6 pb-24">
             
-            <div v-if="currentDayIndex !== 'info'">
+            <div v-if="activeTab === 'itinerary'">
                 <div class="mb-4">
                     <h2 class="text-2xl font-light mb-1">{{schedule[currentDayIndex].date}}</h2>
                     <p class="text-xs text-gray-400 uppercase tracking-widest">{{schedule[currentDayIndex].city}}</p>
                 </div>
 
-                <div class="route-map mb-6 flex items-center justify-center">
-                    <div class="text-[10px] text-gray-400 uppercase tracking-widest absolute top-2 left-4">Route Preview</div>
-                    <div class="flex items-center space-x-8">
-                        <div class="text-center">
-                            <div class="w-2 h-2 bg-gray-300 rounded-full mx-auto mb-1"></div>
-                            <span class="text-[8px] text-gray-400">{{schedule[currentDayIndex].points[0]}}</span>
-                        </div>
-                        <div class="w-12 border-t border-dashed border-gray-300"></div>
-                        <div class="text-center">
-                            <div class="w-2 h-2 bg-gray-800 rounded-full mx-auto mb-1"></div>
-                            <span class="text-[8px] text-gray-600 font-bold">{{schedule[currentDayIndex].points[1]}}</span>
-                        </div>
-                        <div v-if="schedule[currentDayIndex].points[2]" class="w-12 border-t border-dashed border-gray-300"></div>
-                        <div v-if="schedule[currentDayIndex].points[2]" class="text-center">
-                            <div class="w-2 h-2 bg-gray-300 rounded-full mx-auto mb-1"></div>
-                            <span class="text-[8px] text-gray-400">{{schedule[currentDayIndex].points[2]}}</span>
-                        </div>
+                <div class="handdrawn-map mb-6">
+                    <div class="text-[11px] text-gray-500 bg-white/70 px-4 py-2 rounded-full glass-card">
+                        [ 日式手繪風：{{schedule[currentDayIndex].points.join(' ➔ ')}} 相對位置圖 ]
                     </div>
+                    <div class="map-label">Hand-drawn Route</div>
                 </div>
 
                 <div v-for="item in schedule[currentDayIndex].events" :key="item.title" class="glass-card rounded-2xl p-5 mb-4 shadow-sm">
@@ -92,34 +79,23 @@
                     <div class="flex flex-wrap gap-2">
                         <span v-if="item.mustEat" class="text-[10px] font-medium text-rose-500 bg-rose-50 px-2 py-1 rounded">必點：{{item.mustEat}}</span>
                         <span v-if="item.bookingId" class="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">✅ {{item.bookingId}}</span>
-                        <a v-if="item.map" :href="item.map" target="_blank" class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">📍 Google Map</a>
+                        <a v-if="item.map" :href="item.map" target="_blank" class="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded">📍 Map</a>
                     </div>
                 </div>
             </div>
 
-            <div v-else class="space-y-6">
-                <section class="glass-card rounded-2xl p-6">
-                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Flights</h3>
-                    <div class="space-y-3 text-xs font-mono">
-                        <div class="flex justify-between border-b pb-2"><span>TPE ➔ PVG</span><span>MU5006</span></div>
-                        <div class="flex justify-between border-b pb-2"><span>PVG ➔ BCN</span><span>MU249</span></div>
-                        <div class="flex justify-between border-b pb-2"><span>MAD ➔ PVG</span><span>MU710</span></div>
-                        <div class="flex justify-between pb-2"><span>PVG ➔ TSA</span><span>FM801</span></div>
-                    </div>
-                </section>
-
-                <section class="glass-card rounded-2xl p-6">
-                    <h3 class="text-xs font-medium text-gray-400 mb-4 tracking-widest uppercase">Stay</h3>
-                    <div class="space-y-4">
-                        <div class="border-l-2 border-blue-200 pl-4">
-                            <p class="text-[10px] text-blue-400 font-bold">BARCELONA (4/3-4/7)</p>
-                            <p class="text-sm font-medium">Aparthotel Mariano Cubi</p>
-                            <p class="text-[10px] text-gray-400">Carrer de Mariano Cubí, 62</p>
-                        </div>
-                        <div class="border-l-2 border-red-200 pl-4">
-                            <p class="text-[10px] text-red-400 font-bold">MADRID (4/7-4/12)</p>
-                            <p class="text-sm font-medium">Chamberí Apt.</p>
-                            <p class="text-[10px] text-gray-400">Calle General Álvarez de Castro, 16</p>
+            <div v-else class="space-y-8">
+                <section v-for="category in pocketCategories" :key="category.name">
+                    <h3 class="text-sm font-medium text-gray-400 mb-5 tracking-widest uppercase italic border-b pb-2">{{category.name}}</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div v-for="item in category.items" :key="item.title" class="glass-card rounded-2xl p-5 shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-medium text-gray-400">{{item.city}}</span>
+                                <span :class="['text-[10px] px-2 py-0.5 rounded-full uppercase', getTagClass(category.type)]">{{category.type}}</span>
+                            </div>
+                            <h4 class="text-md font-medium mb-1">{{item.title}}</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-3">{{item.desc}}</p>
+                            <a v-if="item.map" :href="item.map" target="_blank" class="text-[10px] text-gray-400 bg-gray-50 px-2 py-1 rounded">📍 Google Map</a>
                         </div>
                     </div>
                 </section>
@@ -131,53 +107,69 @@
         const { createApp, ref } = Vue;
         createApp({
             setup() {
+                const activeTab = ref('itinerary');
                 const currentDayIndex = ref(0);
+
+                const setDay = (index) => {
+                    activeTab.ref = 'itinerary';
+                    currentDayIndex.value = index;
+                };
+
                 const schedule = ref([
                     {
-                        date: '04.02 Thu', city: 'Departure / PVG', weatherTemp: 14, weatherIcon: '☁️',
-                        points: ['TPE', 'PVG', 'Air'],
+                        date: '04.02 Thu', city: 'PVG Transfer', weatherTemp: 14, weatherIcon: '☁️',
+                        points: ['TPE', 'PVG Airport'],
                         events: [
-                            { time: '18:40', type: 'flight', title: 'TPE ➔ PVG (MU5006)', desc: '出發前往上海轉機。' }
+                            { time: '18:40', type: 'flight', title: 'TPE ➔ PVG (MU5006)', desc: '台灣出發，上海轉機。' }
                         ]
                     },
                     {
                         date: '04.03 Fri', city: 'Barcelona', weatherTemp: 16, weatherIcon: '🌤️',
-                        points: ['PVG', 'BCN', 'Stay'],
+                        points: ['PVG', 'BCN Airport', 'Stay (Mariano)'],
                         events: [
-                            { time: '00:15', type: 'flight', title: 'PVG ➔ BCN (MU249)', desc: '長途飛行，預計 08:00 抵達巴塞隆納。' },
-                            { time: '10:00', type: 'info', title: 'Check-in Mariano Cubi', desc: '放行李，稍作休息。' }
+                            { time: '08:00', type: 'flight', title: '抵達 BCN (MU249)', desc: '00:15浦東起飛。' },
+                            { time: '10:00', type: 'info', title: '入住 Mariano Cubi', desc: '放行李，休息。' }
                         ]
                     },
                     {
                         date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18, weatherIcon: '☀️',
-                        points: ['Stay', 'Sagrada', 'Vinitus'],
+                        points: ['Stay', 'Sagrada Família', 'Batlló', 'Vinitus'],
                         events: [
-                            { time: '09:00', type: 'spot', title: '聖家堂', bookingId: '入場 09:00 / 登塔 09:15', map: 'https://maps.app.goo.gl/YwY9Nn9G7ZpQZ9yJ8', desc: '<b>重點：</b>誕生立面光影。' },
-                            { time: '18:30', type: 'food', title: 'Vinitus', mustEat: '鱈魚蜂蜜', map: 'https://maps.app.goo.gl/U2U2U2U2U2U2U2U2U', desc: '熱門店，建議提前排隊。' }
-                        ]
-                    },
-                    {
-                        date: '04.05 Sun', city: 'Barcelona', weatherTemp: 17, weatherIcon: '🌤️',
-                        points: ['Gothic', 'Beach', 'Bunkers'],
-                        events: [
-                            { time: '10:00', type: 'spot', title: '畢卡索博物館', desc: '4/1 搶免費票。', map: 'https://maps.app.goo.gl/ PicassoBCN' },
-                            { time: '18:30', type: 'info', title: '焦糖山 Bunkers 日落', desc: '18:30清場，移至下方野餐。' }
+                            { time: '09:00', type: 'spot', title: '聖家堂', bookingId: '入場 09:00 / 登塔 09:15', map: 'https://maps.app.goo.gl/53m8U', desc: '誕生立面光影最美。' },
+                            { time: '18:30', type: 'food', title: 'Vinitus', mustEat: '鱈魚蜂蜜', map: 'https://maps.app.goo.gl/3A3A3', desc: '不可訂位，17:30前去。' }
                         ]
                     },
                     {
                         date: '04.06 Mon', city: 'Barcelona', weatherTemp: 19, weatherIcon: '☀️',
-                        points: ['Güell', 'Boqueria', 'Montjuïc'],
+                        points: ['Stay', 'Park Güell', 'Boqueria'],
                         events: [
-                            { time: '09:30', type: 'spot', title: '奎爾公園 Park Güell', bookingId: '已預定 09:30', map: 'https://maps.app.goo.gl/GuellBCN', desc: '高第的童話公園。' },
-                            { time: '13:00', type: 'food', title: '波蓋利亞市場', mustEat: '小章魚煎蛋', desc: '市場美食。' }
+                            { time: '09:30', type: 'spot', title: '奎爾公園 Park Güell', bookingId: '已預定 09:30', map: 'https://maps.app.goo.gl/G7G7G', desc: '童話公園散步。' },
+                            { time: '13:00', type: 'food', title: '波蓋利亞市場', mustEat: '小章魚煎蛋', desc: '市場美食巡禮。' }
+                        ]
+                    }
+                ]);
+
+                // 口袋名單資料
+                const pocketCategories = ref([
+                    {
+                        name: '美食臨時備案', type: 'food',
+                        items: [
+                            { city: 'BCN', title: 'La Pepita', desc: '飯店附近，氣氛活潑的創意 Tapas。', map: 'https://maps.app.goo.gl/P2P2P' },
+                            { city: 'MAD', title: 'Chocolatería San Ginés', desc: '24小時，最經典的吉拿棒。', map: 'https://maps.app.goo.gl/S1S1S' }
                         ]
                     },
                     {
-                        date: '04.07 Tue', city: 'Madrid', weatherTemp: 18, weatherIcon: '🌤️',
-                        points: ['Sants', 'Atocha', 'Stay'],
-                        events: [
-                            { time: '14:50', type: 'transport', title: 'iryo 高鐵 (06150)', bookingId: 'BCN-Sants ➔ MAD-Atocha', desc: '14:50 - 17:30。' },
-                            { time: '18:30', type: 'info', title: '入住 Madrid 民宿', desc: 'Calle General Álvarez de Castro, 16' }
+                        name: '景點臨時備案', type: 'spot',
+                        items: [
+                            { city: 'BCN', title: '米拉之家 Casa Milà', desc: '外觀奇特，屋頂煙囪最著名。', map: 'https://maps.app.goo.gl/M3M3M' },
+                            { city: 'BCN', title: '聖保羅醫院', desc: '新藝術風格建築群，人較少。', map: 'https://maps.app.goo.gl/S4S4S' }
+                        ]
+                    },
+                    {
+                        name: '購物臨時備案', type: 'shop',
+                        items: [
+                            { city: 'BCN', title: 'El Corte Inglés (Sol)', desc: '太陽門旁百貨，退稅方便。', map: 'https://maps.app.goo.gl/C1C1C' },
+                            { city: 'BCN', title: 'Labperfum Born', desc: '波恩區的精品手作香水。', map: 'https://maps.app.goo.gl/L1L1L' }
                         ]
                     }
                 ]);
@@ -186,10 +178,11 @@
                     if (type === 'food') return 'tag-food';
                     if (type === 'spot') return 'tag-spot';
                     if (type === 'transport' || type === 'flight') return 'tag-transport';
+                    if (type === 'shop') return 'tag-shop';
                     return 'tag-info';
                 };
 
-                return { currentDayIndex, schedule, getTagClass };
+                return { activeTab, currentDayIndex, setDay, schedule, pocketCategories, getTagClass };
             }
         }).mount('#app');
     </script>
