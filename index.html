@@ -132,9 +132,21 @@
                 ]);
 
                 const packingList = ref([
-                    { name: '證件錢包', items: [{text:'護照/簽證', checked:false}, {text:'歐元現金', checked:false}, {text:'雙幣信用卡', checked:false}] },
+
+                    { name: '證件錢包', items: 
+[
+
+{text:'護照', checked:false}, 
+{text:'台胞證', checked:false}, 
+{text:'歐元現金(~300,零錢)', checked:false}, 
+{text:'雙幣信用卡', checked:false}
+
+] },
+
+                    
                     { name: '電子設備', items: [{text:'萬用轉接頭', checked:false}, {text:'行動電源', checked:false}, {text:'相機記憶卡', checked:false}] },
                     { name: '衣物藥品', items: [{text:'輕羽絨(早晚溫差)', checked:false}, {text:'止痛藥/腸胃藥', checked:false}] }
+                    { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'眼罩', checked:false}] }
                 ]);
 
                 return { activeTab, currentDayIndex, schedule, packingList, setTab, mapError, mapHasError };
