@@ -111,7 +111,7 @@
                         <div class="flex justify-between"><span>04/02 MU5006</span><span>TPE-PVG</span></div>
                         <div class="flex justify-between"><span>04/03 MU249</span><span>PVG-BCN</span></div>
                         <div class="flex justify-between"><span>04/12 MU710</span><span>MAD-PVG</span></div>
-                        <div class="flex justify-between text-rose-400"><span>04/14 FM801</span><span>PVG-TSA</span></div>
+                        <div class="flex justify-between"><span>04/12 FM801</span><span>PVG-TSA</span></div>
                     </div>
                 </section>
             </div>
@@ -172,16 +172,42 @@
 
                 // 行程資料 (保持 4/2-4/12 完整性)
                 const schedule = ref([
-                    { date: '04.02 Thu', city: 'Departure', weatherTemp: 14, mapImg: '0402.jpg', events: [{ time: '18:40', title: 'TPE ➔ PVG (MU5006)', desc: '台灣出發轉機。', expanded: false }] },
-                    { date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18, mapImg: '0404.jpg', events: [{ time: '09:00', title: '聖家堂登塔', desc: '09:00 入場。', expanded: false }] },
+                    { date: '04.02 Thu', city: 'Departure', weatherTemp: 14, mapImg: '0402.jpg', events: [
+                        { time: '18:40', title: 'TPE ➔ PVG (MU5006)', desc: '台灣出發前往上海轉機。轉機時間4h', expanded: false },
+                        { time: '00:40', title: 'PVG ➔ BCN (MU249)', desc: '上海出發前往巴塞隆納。飛行時間13h25m', expanded: false },
+                    ]},
+                    { date: '04.03 Fri.', city: 'Barcelona', weatherTemp: 14, mapImg: '0403.jpg', events: [
+                        { time: '08:05', title: '抵達Barcelona', desc: '08:05 入場。', expanded: false },
+                        { time: '09:00', title: '前往旅館', desc: '搭乘交通工具前往 Aparthotel Mariano Cubi', expanded: false },
+                        { time: '???', title: '四處逛逛', desc: 'TBD', expanded: false },
+                        { time: '???', title: '四處逛逛', desc: 'TBD', expanded: false }
+                    ]},
+          
+                    { date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18, mapImg: '0404.jpg', events: [
+                        { time: '09:00', title: '聖家堂登塔(已購票)', desc: '09:00 入場。請務必提早到達。安檢嚴格。', expanded: false },
+                        { time: '10:00', title: '聖保羅醫院', desc: '聖保羅醫院（Hospital de Sant Pau）建築群導覽。聖家堂-醫院走高地大道(600m)。', expanded: false }, 
+                        { time: '14:00', title: '巴特羅之家(待購票)', desc: '前往巴特羅之家（Casa Batlló），高第經典傑作。', expanded: false },
+                     ] },
+                    { date: '04.05 Sun', city: 'Barcelona', weatherTemp: 18, mapImg: '0404.jpg', events: [
+                        { time: '09:00', title: '聖家堂登塔(已購票)', desc: '09:00 入場。請務必提早到達。安檢嚴格。', expanded: false },
+                        { time: '10:00', title: '聖保羅醫院', desc: '聖保羅醫院（Hospital de Sant Pau）建築群導覽。聖家堂-醫院走高地大道(600m)。', expanded: false }, 
+                        { time: '14:00', title: '巴特羅之家(待購票)', desc: '前往巴特羅之家（Casa Batlló），高第經典傑作。', expanded: false },
+                        ] },
+
+
                     { date: '04.07 Tue', city: 'Madrid', weatherTemp: 18, mapImg: '0407.jpg', events: [{ time: '14:50', title: 'iryo 高鐵 (06150)', desc: '前往 Atocha 車站。', expanded: false }] },
                     { date: '04.09 Thu', city: 'Segovia', weatherTemp: 15, mapImg: '0409.jpg', events: [{ time: '13:00', title: '烤乳豬晚餐', mustEat: 'Mesón de Cándido', desc: '老店必吃。', expanded: false }] },
                     { date: '04.12 Sun', city: 'Madrid', weatherTemp: 20, mapImg: '0412.jpg', events: [{ time: '21:00', title: 'MAD ➔ PVG (MU710)', desc: '賦歸。', expanded: false }] }
                 ]);
 
                 const packingList = ref([
-                    { name: '證件', items: [{text:'護照正本', checked:false}, {text:'雙幣信用卡', checked:false}] },
-                    { name: '電子', items: [{text:'歐規轉接頭', checked:false}, {text:'行動電源', checked:false}] }
+                    { name: '證件', items: [{text:'護照', checked:false},{text:'台胞證', checked:false}, {text:'證件影本', checked:false}] },
+                    { name: '衣物', items: [{text:'薄外套', checked:false}, {text:'換洗衣物', checked:false}, {text:'襪子', checked:false}, {text:'帽子', checked:false}, {text:'泳褲', checked:false},
+                        {text:'太陽眼鏡', checked:false}, {text:'皮帶', checked:false}   ] }, 
+                    { name: '其他', items: [{text:'刮鬍刀', checked:false}, {text:'盥洗用品', checked:false}, {text:'緊急藥品', checked:false}, {text:'雨傘', checked:false}, {text:'濕紙巾', checked:false}, {text:'衛生紙', checked:false}    ] },
+                   
+                    { name: '電子用品', items: [{text:'歐規轉接頭', checked:false}, {text:'行動電源', checked:false}, {text:'相機', checked:false}, {text:'充電線', checked:false}, {text:'耳機', checked:false},    ] },
+                    { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'眼罩', checked:false}, {text:'耳塞', checked:false}, {text:'襪子', checked:false}] }
                 ]);
 
                 return { activeTab, currentDayIndex, schedule, stayInfo, packingList, setTab, mapError, mapHasError };
