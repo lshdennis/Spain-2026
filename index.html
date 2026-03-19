@@ -16,22 +16,18 @@
         .tag-pack { background: #FFF4E5; color: #B07D48; }
         ::-webkit-scrollbar { display: none; }
 
-        /* 天氣動畫 */
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .sun-icon { animation: rotate 10s linear infinite; color: #F59E0B; }
         
-        /* 展開動畫 */
         .expand-enter-active, .expand-leave-active { transition: all 0.3s ease; max-height: 500px; opacity: 1; }
         .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; overflow: hidden; }
         
-        /* 手繪地圖圖層 */
         .map-box { width: 100%; height: 180px; background: #EEE; border-radius: 16px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; border: 1px dashed #CCC; }
         .map-img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
     <div id="app" class="max-w-md mx-auto min-h-screen relative bg-white shadow-2xl">
-        
         <header class="sticky top-0 z-50 glass-card">
             <div class="px-6 py-4 flex justify-between items-center">
                 <h1 class="text-lg font-medium tracking-tight">Spain 2026</h1>
@@ -40,12 +36,9 @@
                     <span class="text-xs font-medium text-gray-500">{{schedule[currentDayIndex].weatherTemp}}°C</span>
                 </div>
             </div>
-            
             <div class="flex overflow-x-auto px-4 pb-2 gap-6 text-sm text-gray-400 no-scrollbar">
-                <button v-for="(day, i) in schedule" @click="setTab('itinerary', i)" :class="activeTab==='itinerary'&&currentDayIndex===i?'tab-active':''" class="whitespace-nowrap pb-1">{{day.date.split(' ')[0]}}</button>
-                <button @click="activeTab='pockets'" :class="activeTab==='pockets'?'tab-active':''" class="whitespace-nowrap pb-1">口袋名單</button>
+                <button v-for="(day, i) in schedule" :key="i" @click="setTab('itinerary', i)" :class="activeTab==='itinerary'&&currentDayIndex===i?'tab-active':''" class="whitespace-nowrap pb-1">{{day.date.split(' ')[0]}}</button>
                 <button @click="activeTab='packing'" :class="activeTab==='packing'?'tab-active':''" class="whitespace-nowrap pb-1">行李備忘</button>
-                <button @click="activeTab='info'" :class="activeTab==='info'?'tab-active':''" class="whitespace-nowrap pb-1">機票住宿</button>
             </div>
         </header>
 
@@ -55,14 +48,12 @@
                     <h2 class="text-2xl font-light">{{schedule[currentDayIndex].date}}</h2>
                     <p class="text-[10px] text-gray-400 uppercase tracking-widest">{{schedule[currentDayIndex].city}}</p>
                 </div>
-
                 <div class="map-box mb-6">
-                    <img :src="schedule[currentDayIndex].mapImg" @error="mapError" class="map-img" alt="請上傳當日手繪圖">
+                    <img :src="schedule[currentDayIndex].mapImg" @error="mapError" class="map-img" alt="Map">
                     <div class="absolute inset-0 flex items-center justify-center text-[10px] text-gray-400 pointer-events-none" v-if="mapHasError">
                         [ 尚未偵測到地圖檔：{{schedule[currentDayIndex].mapImg}} ]
                     </div>
                 </div>
-
                 <div v-for="(item, idx) in schedule[currentDayIndex].events" :key="idx" class="glass-card rounded-2xl p-5 mb-4 shadow-sm overflow-hidden">
                     <div @click="item.expanded = !item.expanded" class="flex justify-between items-center cursor-pointer">
                         <div class="flex flex-col">
@@ -71,14 +62,13 @@
                         </div>
                         <span class="text-[10px] text-gray-300">{{ item.expanded ? '▲ 收起' : '▼ 攻略' }}</span>
                     </div>
-
                     <transition name="expand">
                         <div v-if="item.expanded" class="mt-4 pt-4 border-t border-gray-50 text-xs text-gray-500 leading-relaxed">
                             <p class="mb-3" v-html="item.desc"></p>
                             <div class="flex flex-wrap gap-2">
                                 <span v-if="item.mustEat" class="tag-food px-2 py-0.5 rounded text-[9px]">必吃：{{item.mustEat}}</span>
                                 <span v-if="item.bookingId" class="tag-spot px-2 py-0.5 rounded text-[9px]">✅ {{item.bookingId}}</span>
-                                <a v-if="item.mapUrl" :href="item.mapUrl" class="bg-gray-100 px-2 py-0.5 rounded text-[9px]">📍 地圖導航</a>
+                                <a v-if="item.mapUrl" :href="item.mapUrl" target="_blank" class="bg-gray-100 px-2 py-0.5 rounded text-[9px]">📍 地圖導航</a>
                             </div>
                         </div>
                     </transition>
@@ -96,8 +86,7 @@
                     </div>
                 </div>
             </div>
-
-            </main>
+        </main>
     </div>
 
     <script>
@@ -114,11 +103,11 @@
                 const schedule = ref([
                     {
                         date: '04.04 Sat', city: 'Barcelona', weatherTemp: 18,
-                        mapImg: '0404.jpg', // 你只需將手繪地圖命名為 0404.jpg 放在同資料夾
+                        mapImg: '0404.jpg',
                         points: ['飯店', '聖家堂', 'Vinitus'],
                         events: [
-                            { time: '09:00', title: '聖家堂登塔', expanded: false, bookingId: '09:00 入場', mapUrl: 'https://maps.app.goo.gl/xxx', desc: '<b>登塔攻略：</b>建議搭電梯上、走樓梯下。誕生立面看市區最清楚。' },
-                            { time: '18:30', title: 'Vinitus 晚餐', expanded: false, mustEat: '鱈魚蜂蜜', desc: '<b>小提醒：</b>這家店下午沒休息，17:30去不用排隊。' }
+                            { time: '09:00', title: '聖家堂登塔', expanded: false, bookingId: '09:00 入場', mapUrl: 'https://maps.google.com', desc: '<b>登塔攻略：</b>建議搭電梯上、走樓梯下。' },
+                            { time: '18:30', title: 'Vinitus 晚餐', expanded: false, mustEat: '鱈魚蜂蜜', desc: '不可訂位，建議 17:30 前到。' }
                         ]
                     },
                     {
@@ -126,17 +115,16 @@
                         mapImg: '0406.jpg',
                         points: ['飯店', '奎爾公園', '市場'],
                         events: [
-                            { time: '09:30', title: '奎爾公園', expanded: false, bookingId: '已預定 09:30', desc: '拍彩色大蜥蜴最好的位置在百柱廳上方。' }
+                            { time: '09:30', title: '奎爾公園', expanded: false, bookingId: '已預定 09:30', desc: '拍大蜥蜴最好的位置在百柱廳上方。' }
                         ]
                     }
                 ]);
 
                 const packingList = ref([
-                    { name: '證件錢包', items: [{text:'護照/簽證', checked:false}, {text:'歐元現金', checked:false}, {text:'雙幣信用卡', checked:false}] },
+                    { name: '證件錢包', items: [{text:'護照', checked:false}, {text:'歐元現金', checked:false}, {text:'雙幣信用卡', checked:false}] },
                     { name: '電子設備', items: [{text:'萬用轉接頭', checked:false}, {text:'行動電源', checked:false}, {text:'相機記憶卡', checked:false}] },
-                    { name: '衣物藥品', items: [{text:'輕羽絨(早晚溫差)', checked:false}, {text:'止痛藥/腸胃藥', checked:false}] }
-                    { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'止痛藥/腸胃藥', checked:false}] }
-                
+                    { name: '衣物藥品', items: [{text:'輕羽絨(早晚溫差)', checked:false}, {text:'止痛藥/腸胃藥', checked:false}] },
+                    { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'充氣枕', checked:false}] }
                 ]);
 
                 return { activeTab, currentDayIndex, schedule, packingList, setTab, mapError, mapHasError };
