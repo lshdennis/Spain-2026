@@ -65,6 +65,8 @@
                 </div>
             </div>
             <div class="flex overflow-x-auto px-4 pb-2 gap-6 text-sm text-gray-400 no-scrollbar">
+                <button @click="activeTab='notes'" :class="activeTab==='notes'?'tab-active':''" class="whitespace-nowrap pb-1">注意事項</button>
+                <button @click="activeTab='spanish'" :class="activeTab==='spanish'?'tab-active':''" class="whitespace-nowrap pb-1">基礎西語</button>
                 <button v-for="(day, i) in schedule" :key="i" @click="setTab('itinerary', i)" :class="activeTab==='itinerary'&&currentDayIndex===i?'tab-active':''" class="whitespace-nowrap pb-1">{{day.date.split(' ')[0]}}</button>
                 <button @click="activeTab='packing'" :class="activeTab==='packing'?'tab-active':''" class="whitespace-nowrap pb-1">行李</button>
                 <button @click="activeTab='info'" :class="activeTab==='info'?'tab-active':''" class="whitespace-nowrap pb-1">航班住宿</button>
@@ -155,16 +157,156 @@
                     </div>
                 </div>
             </div>
+
+            <div v-else-if="activeTab === 'spanish'" class="space-y-6">
+                <div class="mb-2">
+                    <h2 class="text-2xl font-light">基礎西語</h2>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Español básico</p>
+                </div>
+                <div v-for="cat in basicSpanish" :key="cat.title" class="glass-card rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">{{ cat.title }}</h3>
+                    <div class="space-y-0">
+                        <div
+                            v-for="(row, ri) in cat.rows"
+                            :key="ri"
+                            class="flex justify-between items-start gap-3 py-3 border-b border-gray-100/90 last:border-0 text-xs"
+                        >
+                            <div class="flex items-start gap-2 min-w-0 flex-1">
+                                <button
+                                    type="button"
+                                    @click.stop="speakSpanish(row.es)"
+                                    class="shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-[12px] leading-none text-gray-500 shadow-sm hover:border-amber-300/80 hover:bg-amber-50/50 hover:text-amber-900 active:scale-95 transition"
+                                    title="聽發音"
+                                    aria-label="播放西語發音"
+                                >
+                                    🔊
+                                </button>
+                                <span class="font-medium text-gray-800 leading-snug pt-0.5">{{ row.es }}</span>
+                            </div>
+                            <span class="text-gray-500 text-right leading-snug shrink-0 max-w-[48%]">{{ row.zh }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else-if="activeTab === 'notes'" class="space-y-6">
+                <div class="mb-2">
+                    <h2 class="text-2xl font-light">注意事項</h2>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Reminders</p>
+                </div>
+                <div v-for="sec in notesSections" :key="sec.title" class="glass-card rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">{{ sec.title }}</h3>
+
+                    <template v-if="sec.blocks">
+                        <div v-for="(blk, bi) in sec.blocks" :key="bi" class="mb-4 last:mb-0 border-b border-gray-100/90 last:border-0 pb-4 last:pb-0">
+                            <div
+                                v-if="blk.subtitle"
+                                @click="blk.expanded = !blk.expanded"
+                                class="flex justify-between items-start gap-3 cursor-pointer select-none -mx-1 px-1 py-0.5 rounded-lg hover:bg-gray-50/80 transition-colors"
+                            >
+                                <h4 class="text-sm font-medium text-gray-800 tracking-tight">{{ blk.subtitle }}</h4>
+                                <span class="text-[10px] text-gray-300 shrink-0 mt-0.5">{{ blk.expanded ? '▲' : '▼' }}</span>
+                            </div>
+                            <transition name="expand">
+                                <div v-show="blk.subtitle ? blk.expanded : true" class="space-y-3" :class="blk.subtitle ? 'pt-3' : ''">
+                                    <p v-if="blk.intro" class="text-xs text-gray-600 leading-relaxed" v-html="blk.intro"></p>
+
+                                    <div v-if="blk.table" class="overflow-x-auto rounded-xl border border-gray-100/80 bg-[#FAFAF8]">
+                                        <table class="w-full min-w-[280px] text-left text-[11px] text-gray-600">
+                                            <thead>
+                                                <tr class="border-b border-gray-200/80 bg-white/80 text-[10px] text-gray-400">
+                                                    <th class="px-3 py-2 font-medium w-[24%]">{{ blk.tableHeaders?.h1 || '時段' }}</th>
+                                                    <th class="px-3 py-2 font-medium w-[30%]">{{ blk.tableHeaders?.h2 || '形式' }}</th>
+                                                    <th class="px-3 py-2 font-medium">{{ blk.tableHeaders?.h3 || '說明' }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(row, ri) in blk.table" :key="ri" class="border-b border-gray-100/90 last:border-0 align-top">
+                                                    <td class="px-3 py-2.5 text-gray-800 font-medium">{{ row.col1 }}</td>
+                                                    <td class="px-3 py-2.5">{{ row.col2 }}</td>
+                                                    <td class="px-3 py-2.5 leading-snug">{{ row.col3 }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <template v-if="blk.bulletGroups">
+                                        <div v-for="(grp, gi) in blk.bulletGroups" :key="gi" class="space-y-2" :class="gi > 0 ? 'mt-4 pt-3 border-t border-gray-100/80' : ''">
+                                            <p v-if="grp.title" class="text-[11px] font-medium text-gray-700">{{ grp.title }}</p>
+                                            <ul v-if="grp.items" class="text-xs text-gray-600 leading-relaxed space-y-2 pl-1">
+                                                <li v-for="(b, i) in grp.items" :key="i" class="flex gap-2">
+                                                    <span class="text-gray-300 shrink-0 mt-0.5">•</span>
+                                                    <span>{{ b }}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <p v-if="blk.bulletTitle" class="text-[11px] font-medium text-gray-700 mt-1">{{ blk.bulletTitle }}</p>
+                                        <ul v-if="blk.bullets" class="text-xs text-gray-600 leading-relaxed space-y-2 pl-1">
+                                            <li v-for="(b, i) in blk.bullets" :key="i" class="flex gap-2">
+                                                <span class="text-gray-300 shrink-0 mt-0.5">•</span>
+                                                <span>{{ b }}</span>
+                                            </li>
+                                        </ul>
+                                    </template>
+                                    <p v-if="blk.note" class="text-[10px] text-gray-500 leading-relaxed border-l-2 border-amber-200/80 pl-3 py-0.5">{{ blk.note }}</p>
+                                </div>
+                            </transition>
+                        </div>
+                    </template>
+
+                    <ul v-else class="text-xs text-gray-600 leading-relaxed space-y-2 pl-1">
+                        <li v-for="(line, i) in sec.lines" :key="i" class="flex gap-2">
+                            <span class="text-gray-300 shrink-0">•</span>
+                            <span>{{ line }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </main>
     </div>
 
     <script>
-        const { createApp, ref } = Vue;
+        const { createApp, ref, onMounted } = Vue;
         createApp({
             setup() {
-                const activeTab = ref('itinerary');
+                const activeTab = ref('notes');
                 const currentDayIndex = ref(0);
                 const mapHasError = ref(false);
+
+                const pickSpanishVoice = () => {
+                    const synth = window.speechSynthesis;
+                    if (!synth) return null;
+                    const voices = synth.getVoices();
+                    return (
+                        voices.find((v) => /^es[-_]/.test(v.lang) && /Spain|España|Castilian/i.test(v.name || '')) ||
+                        voices.find((v) => /^es[-_]/.test(v.lang)) ||
+                        voices.find((v) => /spanish/i.test(v.name || '')) ||
+                        null
+                    );
+                };
+
+                const speakSpanish = (text) => {
+                    const synth = window.speechSynthesis;
+                    if (!synth || !text) return;
+                    synth.cancel();
+                    const u = new SpeechSynthesisUtterance(String(text));
+                    u.lang = 'es-ES';
+                    u.rate = 0.92;
+                    const voice = pickSpanishVoice();
+                    if (voice) u.voice = voice;
+                    synth.speak(u);
+                };
+
+                onMounted(() => {
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.getVoices();
+                        window.speechSynthesis.addEventListener('voiceschanged', () => {
+                            window.speechSynthesis.getVoices();
+                        });
+                    }
+                });
 
                 // 依事件內容自動判斷分類，並套用不同顏色。
                 // 若你希望更精準，可以之後把每筆 event 補上 category 欄位。
@@ -354,6 +496,16 @@
                                 09:00 入場。請務必提早到達。安檢嚴格。<br>
                                 <b>景點說明：</b>這座高第的畢生傑作是將自然主義融入結構工程的頂峰。內部如森林般的柱群，在不同時段的彩繪玻璃折射下，呈現出如夢似幻的流光。<br>
                                 <b>最佳拍照點：</b>誕生立面對面的公園池塘旁，可拍下教堂全景與水中倒影。<br>
+                                
+                                <!-- 可收合圖片區塊 Start -->
+                                <details>
+                                    <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
+                                    <div style="margin:10px 0;">
+                                        <img src="sagrada.jpg" alt="聖家堂打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                    </div>
+                                </details>
+                                <!-- 可收合圖片區塊 End -->
+                                
                                 <b>顧問 Tips：</b>你的 9:15 登塔時間非常緊湊，一進場請直奔電梯。下塔後再回中殿慢慢欣賞。中殿後方的地下室博物館（Gaudí's workshop）極具策略性，可看到高第如何利用物理垂吊模型推導建築結構。
                             `, 
                             expanded: false 
@@ -388,7 +540,16 @@
                                 這是一棟沒有直線的「海洋之屋」。其外牆如龍鱗片，陽台似骷髏，內裝則充滿了人體工學與通風導流的設計巧思。<br>
                                 <b>必看細節：</b>閣樓的魚骨結構與頂樓的煙囪。<br>
                                 <b>顧問 Tips：</b>建議加購「藍色智能語音導覽」，其 AR 互動能讓你看到百年前的家具擺設。人潮極多，需嚴防專業小偷在門口拍照區出沒。
-                            `, 
+                                                            <!-- 可收合圖片區塊 Start -->
+                                <details>
+                                    <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
+                                    <div style="margin:10px 0;">
+                                        <img src="casabatllo.jpg" alt="Casa Batlló打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                    </div>
+                                </details>
+                                <!-- 可收合圖片區塊 End -->
+                            
+                                `, 
                             expanded: false 
                         },
 
@@ -429,7 +590,7 @@
 
                         {
                             time: '☕',
-                            title: 'Nomad Coffee',
+                            title: 'Nomad Coffee (周末休息)',
                             category: '美食',
                             desc: `
                                 Nomad Coffee 是巴塞隆納頂尖的精品咖啡品牌，推薦造訪位於舊城區的 Nomad Coffee Lab & Shop（最經典、豆子選擇多）或鄰近加泰羅尼亞廣場的 Petit Nomad（氛圍輕鬆、適合歇息）。<br>他們的冷萃（Cold Brew）與 Cortado 咖啡皆受好評。 <br>
@@ -555,6 +716,21 @@
                                 <b>景點介紹：</b>嘆息橋（Pont del Bisbe）是哥德區內最具特色的建築之一，連接主教府與加泰隆尼亞政府大廈。新哥德式的石雕橋拱和欄杆，充滿故事感與神秘氛圍。是熱門攝影打卡點。<br>
                                 <b>顧問 Tips：</b>路線規劃可與主教座堂同時參觀。建議清晨來避開人潮，細品古城小巷風情。<br>
                             `,
+                            expanded: false
+                        },
+
+                        {
+                            time: '🧪',
+                            title: 'Yumilab Barcelona',
+                            category: '購物',
+                            desc: `
+                                <b>景點介紹：</b> 這是一家位於 El Born (波恩區) 的創意工作室。他們的產品核心在於將巴塞隆納的城市符號（特別是建築細節）透過 3D 建模、生物塑料 (PLA)、石膏與環保樹脂進行現代化的再詮釋。<br><br>
+                                
+                                <b>顧問 Tips：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>Panot 造型擴香石/花盆：這是他們的招牌。將市磚圖騰做成不同顏色的立方體花盆，放在辦公桌或家中非常有城市記憶點。</li>
+                                        <li>迷你市磚磁鐵/杯墊：這不是那種粗糙的觀光磁鐵，其觸感（模擬混凝土或陶瓷）非常細膩，適合作為送給客戶或專業同事的質感伴手禮。</li>
+                            </ul>`,
                             expanded: false
                         },
                         {
@@ -949,12 +1125,253 @@
                     { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'眼罩', checked:false}, {text:'耳塞', checked:false}, {text:'襪子', checked:false}] }
                 ]);
 
+                const notesSections = ref([
+                    {
+                        title: '證件與錢財',
+                        blocks: [
+                            {
+                                subtitle: '基本習慣',
+                                expanded: true,
+                                bullets: [
+                                    '護照與登機證分開收納，手機留存證件照片備用。',
+                                    '刷卡留意是否為歐元計價；小額現金備用於市集或只收現金的店家。',
+                                    '人潮密集處留意背包與手機，地鐵與觀光景點提高警覺。'
+                                ]
+                            },
+                            {
+                                subtitle: '【三字訣】：包前背、繩掛機、錢分散。',
+                                expanded: false,
+                                tableHeaders: { h1: '面向', h2: '項目', h3: '重點' },
+                                table: [
+                                    {
+                                        col1: '財產配置（由內而外）',
+                                        col2: '隱形層（衣服內）',
+                                        col3: '護照、大面額現金、備用卡。'
+                                    },
+                                    {
+                                        col1: '裝備管理（隨時隨地）',
+                                        col2: '手機／包包',
+                                        col3:
+                                            '手機務必使用掛繩，防止搶奪或噴飛。包包在人潮中一律前背；用餐時可將帶子纏繞腿部或椅腳。'
+                                    },
+                                    {
+                                        col1: '行為防護（心理戰術）',
+                                        col2: '神態',
+                                        col3: '展現自信警覺，避免露出困惑、迷路或過度專注手機的神情。'
+                                    }
+                                ]
+  
+                            },
+                            {
+                                subtitle: '常見「商業詐騙與干擾」手法',
+                                expanded: false,
+                                tableHeaders: { h1: '類型', h2: '常見手法', h3: '應對方式' },
+                                table: [
+                                    {
+                                        col1: '地圖/連署黨',
+                                        col2: '拿著大地圖問路，或要你簽名支持慈善（其實是遮擋你的視線行竊）',
+                                        col3: '堅定搖頭說 "No, gracias" 並持續走動，不要停下。'
+                                    },
+                                    {
+                                        col1: '鳥屎/髒污黨',
+                                        col2: '故意在你背後噴灑液體，假裝熱心幫你擦拭髒污。',
+                                        col3:
+                                            '拒絕任何陌生人的肢體接觸，立刻遠離並自行到廁所清理。'
+                                    },
+                                    {
+                                        col1: '餐廳桌邊族',
+                                        col2: '假裝推銷東西或要錢，將紙張蓋在你的手機上，收走紙張時順便帶走手機。',
+                                        col3: '手機絕對不放桌面，永遠拿在手上或收進包包。'
+                                    },
+                                    {
+                                        col1: '地鐵擠門族',
+                                        col2: '在車門即將關閉時故意製造擁擠，趁亂下手後跳出車門。',
+                                        col3: '進入車廂後往中間走，背部靠牆，包包背在胸前並用手護住。'
+                                    }
+                                ]
+                            }
+                            
+                        ]
+                    },
+
+                    {
+                        title: '退稅攻略',
+                        lines: [
+                            '待補上'
+                        ]
+                    },
+
+                    {
+                        title: '省錢攻略',
+                        blocks: [
+                            {
+                                subtitle: '餐飲策略：午餐吃好，晚餐吃巧',
+                                expanded: false,
+                                intro: '西班牙人的飲食重點在於午間，掌握以下原則可大幅降低伙食費：',
+                                table: [
+                                    {
+                                        col1: '午餐（主餐）',
+                                        col2: 'Menú del Día（每日套餐）',
+                                        col3: '含前菜、主菜、甜點、飲料，約 10–15 歐元，CP 值最高。'
+                                    },
+                                    {
+                                        col1: '晚餐（輕食）',
+                                        col2: 'Tapas & 酒吧',
+                                        col3: '建議隨意找家酒吧吃 Tapas；部分地區點酒會附贈小點心。'
+                                    },
+                                    {
+                                        col1: '預算控管',
+                                        col2: '超市採買',
+                                        col3: '前往 Mercadona 或 Carrefour 購買火腿、奶酪與水果，自製 Bocadillo（三明治），省下的餐費足以支付一張景點門票。'
+                                    }
+                                ],
+                                bulletGroups: [
+                                    {
+                                        title: '✦ 小提醒：',
+                                        items: [
+                                            'Menú del Día 只在中午供應，時段約 13:00～15:30，13:15～14:00 為最佳到場時間。',
+                                            '建議避開 15:00 後，可能主菜售罄或廚房收班，只剩一桌氣氛尷尬。'
+                                        ]
+                                    },
+                                    {
+                                        title: '✦ 怎麼找到厲害的 Menú del Día？',
+                                        items: [
+                                            'Step 1：別看門面，最強的通常藏在巷內老店、裝潢陽春的餐館。',
+                                            'Step 2：看門口黑板有沒有寫「Menú del Día」+ 手寫價錢。',
+                                            'Step 3：店內要有「當地人氛圍」，像西班牙文聊天聲、有人看報紙，就對了。'
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                subtitle: '廁所攻略',
+                                expanded: false,
+                                intro: '西班牙的公共廁所要付錢，價格約 €0.5～1.5，有些能刷卡，有些只接受硬幣。',
+                                bulletGroups: [
+                                    {
+                                        title: '1. 去火車站、巴士站、大型公園的公共廁所',
+                                        items: [
+                                            'But 馬德里中央車站 Atocha 洗手間需收費 €1（但很高級）。建議在火車抵達前於車廂內完成。'
+                                        ]
+                                    },
+                                    {
+                                        title: '2. 去連鎖速食店、咖啡廳、博物館消費，買「廁所的使用權」',
+                                        items: [
+                                            '去咖啡廳買杯 Espresso，消費收據上有廁所密碼，就能使用店內的廁所。'
+                                        ]
+                                    },
+                                    {
+                                        title: '3. 下載公共廁所 App，像 Flush Toilet Finder & Map、Toilet Finder、Flush Public Toilets / Restrooms。',
+                                        items: [
+                                            '雖然不是為西班牙設計，但馬德里、巴塞隆納的資料較多，能找到附近的公共廁所。'
+                                        ]
+                                    },
+                                    {
+                                        title: '✦ 小提醒：還是有免費的公共廁所：',
+                                        items: [
+                                            '西班牙連鎖百貨公司 El Corte Inglés',
+                                            '購物中心 Maremagnum（一樓是付費廁所，二樓是免費廁所）',
+                                            '商場 Arenas de Barcelona',
+                                            '西班牙連鎖超市 Mercadona',
+                                            '維瑞納宮（Palau de la Virreina）',
+                                            '展覽貿易中心 Palau Robert',
+                                            '服飾店 Primark'
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                subtitle: '交通攻略',
+                                expanded: false,
+                                intro: '善用交通票卡與大眾運輸。 但也有人推薦單程票, 依旅遊行程評估',
+                                bulletTitle: '多程票卡（10 次券）',
+                                bullets: [
+                                    '巴塞隆納：T-casual 卡，10 次約 12 歐元。',
+                                    '馬德里：Metrobús 10 次票，約 8.6 歐元（含 2.5 歐元工本費）。'
+                                ],
+                                note: '註：票價比單程票便宜將近一半。'
+                            },
+                            {
+                                subtitle: '飲水文化',
+                                expanded: false,
+                                bulletGroups: [
+                                    {
+                                        title: '免費的水?',
+                                        items: [
+                                            '餐廳通常不提供免費水，說「agua（水）」通常不會免費上桌，而是瓶裝水，分成有氣（agua con gas）和無氣（agua sin gas）兩種。',
+                                            '如果你想要免費的自來水，需要特別說 <b>agua del grifo</b>。這樣一來，服務生會知道你需要免費、可生飲的自來水。'
+                                        ]
+                                    },
+                                    {
+                                        title: '水比酒貴?',
+                                        items: [
+                                            '在一些餐廳，瓶裝水的價格有時比葡萄酒還要貴，點餐時可考慮是否需要點水。不是特別需要水的話，可以試試當地最出名的水果酒：Sangria。'
+                                        ]
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+
+                    {
+                        title: '作息與飲食',
+                        lines: [
+                            '西班牙晚餐時間較晚，訂位或排隊前可先確認營業時段。',
+                            '午後部分商店休息（Siesta），安排行程時可預留彈性。',
+                            '天氣乾燥時多補水，長時間步行建議穿舒適鞋款。'
+                        ]
+                    },
+                    {
+                        title: '通訊與緊急',
+                        lines: [
+                            '歐盟通用緊急電話：112。',
+                            '確認漫遊或 eSIM 設定，並記下飯店地址與聯絡方式。'
+                        ]
+                    }
+                ]);
+
+                const basicSpanish = ref([
+                    {
+                        title: '招呼與禮貌',
+                        rows: [
+                            { es: 'Hola', zh: '你好' },
+                            { es: 'Buenos días', zh: '早安' },
+                            { es: 'Buenas tardes', zh: '午安／下午好' },
+                            { es: 'Gracias', zh: '謝謝' },
+                            { es: 'Por favor', zh: '請／麻煩' },
+                            { es: 'Perdón / Disculpe', zh: '不好意思／借過' }
+                        ]
+                    },
+                    {
+                        title: '餐廳常用',
+                        rows: [
+                            { es: 'La cuenta, por favor', zh: '請結帳' },
+                            { es: '¿Qué recomienda?', zh: '有什麼推薦？' },
+                            { es: 'Agua del grifo, por favor', zh: '請給自來水（免費）' },
+                            { es: 'Sin hielo, por favor', zh: '請不要加冰' },
+                            { es: 'Para llevar', zh: '外帶' }
+                        ]
+                    },
+                    {
+                        title: '購物與問路',
+                        rows: [
+                            { es: '¿Cuánto cuesta?', zh: '多少錢？' },
+                            { es: '¿Dónde está…?', zh: '…在哪裡？' },
+                            { es: 'No entiendo', zh: '我聽不懂' },
+                            { es: '¿Habla inglés?', zh: '您會說英文嗎？' }
+                        ]
+                    }
+                ]);
+
                 return {
                     activeTab,
                     currentDayIndex,
                     schedule,
                     stayInfo,
                     packingList,
+                    notesSections,
+                    basicSpanish,
+                    speakSpanish,
                     setTab,
                     mapError,
                     mapHasError,
