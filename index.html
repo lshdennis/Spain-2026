@@ -163,6 +163,14 @@
                     <h2 class="text-2xl font-light">基礎西語</h2>
                     <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Español básico</p>
                 </div>
+                <div class="glass-card rounded-2xl p-4 border border-amber-100/80 bg-amber-50/40 text-xs text-amber-900 leading-relaxed">
+                    <span class="font-medium">必記關鍵字：</span>
+                    <ul class="list-disc pl-5 mt-1">
+                        <li>Hola（開場）</li>
+                        <li>Menú del día（核心餐飲策略）</li>
+                        <li>No, gracias（拒絕騷擾）</li>
+                    </ul>
+                </div>
                 <div v-for="cat in basicSpanish" :key="cat.title" class="glass-card rounded-2xl p-6 shadow-sm">
                     <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">{{ cat.title }}</h3>
                     <div class="space-y-0">
@@ -501,7 +509,7 @@
                                 <details>
                                     <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
                                     <div style="margin:10px 0;">
-                                        <img src="sagrada.jpeg" alt="聖家堂打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                        <img src="sagrada.jpg" alt="聖家堂打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
                                     </div>
                                 </details>
                                 <!-- 可收合圖片區塊 End -->
@@ -544,7 +552,7 @@
                                 <details>
                                     <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
                                     <div style="margin:10px 0;">
-                                        <img src="casabatllo.jpeg" alt="Casa Batlló打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                        <img src="casabatllo.jpg" alt="Casa Batlló打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
                                     </div>
                                 </details>
                                 <!-- 可收合圖片區塊 End -->
@@ -552,6 +560,18 @@
                                 `, 
                             expanded: false 
                         },
+                        { 
+                            time: '🍔', 
+                            title: '麥當勞（巴特略之家對面）', 
+                            category: '景點',
+                            desc: `
+                                <b>特色介紹：</b>位於巴塞隆納巴特略之家（Casa Batlló）正對面的麥當勞，因地理位置獨特成為旅客打卡的熱門景點。店內融合當地建築元素，裝潢明亮現代，與馬路對面的高第建築形成有趣對比。<br><br>
+                                <b>推薦理由：</b>除了方便購買熟悉的速食餐點，這家麥當勞也提供在地限定口味，部分甜點與飲品僅在西班牙販售。若打算參觀巴特略之家，可以順道入內小歇吹冷氣、補充能量，感受當地年輕人與觀光客交織的日常生活氣氛。<br><br>
+                                <b>特別提醒：</b>餐廳正對著名的建築地標，是欣賞街景及拍照的絕佳位置。用餐高峰時段較為擁擠，建議避開尖峰時間造訪。
+                            `,
+                            expanded: false 
+                        },
+
 
                         { 
                             time: '🍦', 
@@ -708,6 +728,9 @@
                             `,
                             expanded: false
                         },
+                     
+                     
+
                         {
                             time: '🌉',
                             title: '嘆息橋',
@@ -744,6 +767,8 @@
                             `,
                             expanded: false
                         },
+
+
                         {
                             time: '🏛️',
                             title: '皇家廣場 (Placa Reiat)',
@@ -797,6 +822,51 @@
                                 `,
                                 expanded: false
                             },
+
+                            {
+                                time: '🍴',
+                                title: 'Colom Restaurant',
+                                category: '美食',
+                                desc: `
+                                    <b>餐廳介紹：</b>Colom Restaurant 是巴塞隆納老城人氣高漲的西班牙餐館，以平價而正宗的海鮮飯 (Paella) 聞名，每到用餐時段總是大排長龍。餐廳環境溫馨，服務友善，是旅客品嚐西班牙家常料理的熱門選擇。<br><br>
+                                    <b>特色必吃：</b>海鮮燉飯、起司火腿拼盤及招牌 Sangria。<br>
+                                    <b>顧問 Tips：</b>建議避開正餐尖峰時段（中午 12:00 前或下午 3 點後前往），可迅速入座。若想品嘗多種小菜也可點幾道 Tapas 和朋友分食。
+                                `,
+                                expanded: false
+                            },
+                            {
+                                time: '🍦',
+                                title: 'Gelato Collection',
+                                category: '甜點',
+                                desc: `
+                                    <b>冰淇淋介紹：</b>Gelato Collection 是在地網紅推薦的人氣義式冰淇淋店，主打新鮮水果原料與獨特口味。裝潢清新簡約，是逛完海濱散步後的最佳解暑選擇。<br><br>
+                                    <b>特色必吃：</b>開心果、檸檬、可可、以及當季限定口味。每一口都濃郁綿密、不甜膩。<br>
+                                    <b>顧問 Tips：</b>提供試吃，有選擇障礙可請店員推薦招牌。夏天高峰時間會排隊，建議傍晚或下午人較少時造訪。
+                                `,
+                                expanded: false
+                            },
+                            {
+                                time: '🍨',
+                                title: 'Rocambolesc',
+                                category: '甜點',
+                                desc: `
+                                    <b>品牌介紹：</b>Rocambolesc 為米其林三星主廚 Jordi Roca 創立的創意冰品店，裝潢奇幻童趣，人氣高漲。主打造型獨特的義式冰淇淋與手作甜點，採用優質天然食材，每一款造型都令人驚喜。<br><br>
+                                    <b>招牌必吃：</b>「明信片冰淇淋」（Gelato in a postcard）、手作聖代、各式獨創配料。<br>
+                                    <b>顧問 Tips：</b>推薦排隊品嚐經典聖代與造型雪糕，適合打卡拍照。若有特殊口味推出，建議勇於嚐鮮！
+                                `,
+                                expanded: false
+                            },
+                            {
+                                time: '🍰',
+                                title: 'Jon Cake',
+                                category: '甜點',
+                                desc: `
+                                    <b>甜點介紹：</b>Jon Cake 以「半熟巴斯克乳酪蛋糕」風靡巴塞隆納，被譽為當地最佳起司蛋糕之一。蛋糕濃郁爆漿，頂部烤出焦糖色澤，內餡滑順流心。門市小巧，經常大排長龍。<br><br>
+                                    <b>必吃推薦：</b>原味 Basque Cheesecake 必點，也有抹茶、巧克力等創意口味。單片/整顆皆可購買。<br>
+                                    <b>顧問 Tips：</b>建議提前預訂或把握剛開門時段，否則熱門口味可能早早售罄。外帶切片方便邊走邊吃，是甜點控朝聖必訪名店。
+                                `,
+                                expanded: false
+                            },
                             {
                                 time: '🗿',
                                 title: "L'Estel ferit",
@@ -834,7 +904,41 @@
                                     </ul>
                                 `,
                                 expanded: false
-                            }
+                            },
+
+                            {
+                                time: '🍽️',
+                                title: 'La Maruca',
+                                category: '美食',
+                                desc: `
+                                    <b>餐廳介紹：</b>La Maruca 是馬德里知名的現代北西班牙餐廳，以來自坎塔布里亞（Cantabria）的經典家庭料理為主軸，以「高 CP 值、時髦裝潢、全天候供應」在當地行銷圈與美食圈建立了極強的品牌力。<br><br>
+                                    <b>必吃推薦：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>
+                                            <b>Tortilla de Patata（西班牙馬鈴薯蛋餅）</b>：<br>
+                                            地位：被公認為馬德里最強的 Tortilla 之一。<br>
+                                            口感：「流心派 (Runny)」，蛋液濃稠半熟，馬鈴薯與焦糖化洋蔥完美融合、入口即化。<br>
+                                            策略 Tip：早餐時段點一份 Pincho de Tortilla 配咖啡，是當地人最奢侈的開場。另外還有一款「鮪魚美乃滋內餡」（Tortilla rellena de bonito），在社群有超高討論度。
+                                        </li>
+                                        <li>
+                                            <b>Buñuelos de Bacalao（炸鱈魚球）</b>：<br>
+                                            口感極其輕盈，內餡如慕斯般綿密，是每桌必點的前菜。
+                                        </li>
+                                        <li>
+                                            <b>Tarta de Queso（起司蛋糕）</b>：<br>
+                                            承襲 Cañadío 酒館自 1981 年的傳奇配方。這不是紐約式硬蛋糕，而是半流動狀的溫熱起司蛋糕，乳香濃郁，甜度適中。
+                                        </li>
+                                        <li>
+                                            <b>Rabas（炸魷魚）</b>：<br>
+                                            典型的坎塔布里亞做法，麵衣薄脆、魷魚鮮甜，是搭配生啤酒（Caña）的最佳拍檔。
+                                        </li>
+                                    </ul>
+                                    <b>顧問 Tips：</b>熱門時段建議預約，可與朋友分食多種北西經典冷熱小菜。甜食控必點他們家自製起司蛋糕，濃郁滑順為餐點畫下完美句點。
+                                `,
+                                expanded: false
+                            },
+
+                            
                         ]
                     },
 
@@ -1196,8 +1300,51 @@
 
                     {
                         title: '退稅攻略',
-                        lines: [
-                            '待補上'
+                        blocks: [
+                        {
+                                subtitle: '核心數據',
+                                expanded: false,
+                                bullets: [
+                                    '退稅率：實際入袋約 10.5% - 15.7%（依金額遞增）。',
+                                    '門檻：無最低消費限制（0 歐元起即可退）。',
+                                    '對象：非歐盟居民，商品須於 3 個月內帶離境。'
+                                ]
+                            },
+                            {
+                                subtitle: '店內動作 (In-Store SOP)',
+                                expanded: false,
+                                bullets: [
+                                    '索單：結帳出示護照照片，索取 D.I.V.A. 電子退稅單（含 QR Code）。',
+                                    '策略：在 El Corte Inglés 等百貨集中開單，級距越高、退稅比率越高。',
+                                ]
+                            },
+                            {
+                                subtitle: '機場流程 (Airport SOP)',
+                                expanded: false,
+                                bullets: [
+                                    '掃描：托運行李前，至 D.I.V.A. 自動機器掃描 QR Code。',
+                                    '燈號：', 
+                                        '　　綠燈：成功，直接投遞信箱（選信用卡退回）。',
+                                        '　　紅燈：失敗，攜帶商品至海關櫃檯人工查驗。',
+                                    '退款：推薦信用卡退帳（匯率優）；領現金手續費高且匯率差。',
+                                ]
+                            },
+                            {
+                                subtitle: '⚠️ 三大避坑指南',
+                                expanded: false,
+                                bullets: [
+                                    '餐廳/飯店不可退：僅限帶得走的「實體商品」。',
+                                    '最後一站原則：若去其他歐盟國家，在離開歐盟的最後一個機場辦理。',
+                                    '提早抵達：建議預留 3.5 小時 抵達機場，應對紅燈查驗排隊。',
+                                ]
+                            },
+                            {
+                                subtitle: '💡 顧問總結',
+                                expanded: false,
+                                bullets: [
+                                    '黃金組合：集中採購 + D.I.V.A. 綠燈 + 信用卡退款 = 收益最大化。',
+                                ]
+                            },
                         ]
                     },
 
@@ -1338,6 +1485,7 @@
                             { es: 'Buenos días', zh: '早安' },
                             { es: 'Buenas tardes', zh: '午安／下午好' },
                             { es: 'Gracias', zh: '謝謝' },
+                            { es: 'No, gracias.', zh: '不用了，謝謝（拒絕小販、推銷、或可疑人物最有效的武器' },
                             { es: 'Por favor', zh: '請／麻煩' },
                             { es: 'Perdón / Disculpe', zh: '不好意思／借過' }
                         ]
@@ -1345,6 +1493,7 @@
                     {
                         title: '餐廳常用',
                         rows: [
+                            { es: 'Menú del día', zh: '每日套餐（午餐特餐）' },
                             { es: 'La cuenta, por favor', zh: '請結帳' },
                             { es: '¿Qué recomienda?', zh: '有什麼推薦？' },
                             { es: 'Agua del grifo, por favor', zh: '請給自來水（免費）' },
@@ -1359,6 +1508,14 @@
                             { es: '¿Dónde está…?', zh: '…在哪裡？' },
                             { es: 'No entiendo', zh: '我聽不懂' },
                             { es: '¿Habla inglés?', zh: '您會說英文嗎？' }
+                        ]
+                    },
+                    {
+                        title: '緊急用語',
+                        rows: [
+                            { es: 'Policía', zh: '警察' },
+                            { es: '¡Ayuda!', zh: '救命！／幫忙！' },
+                            { es: 'Me han robado', zh: '我被偷了' }
                         ]
                     }
                 ]);
