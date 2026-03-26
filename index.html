@@ -69,6 +69,7 @@
                 <button @click="activeTab='spanish'" :class="activeTab==='spanish'?'tab-active':''" class="whitespace-nowrap pb-1">基礎西語</button>
                 <button v-for="(day, i) in schedule" :key="i" @click="setTab('itinerary', i)" :class="activeTab==='itinerary'&&currentDayIndex===i?'tab-active':''" class="whitespace-nowrap pb-1">{{day.date.split(' ')[0]}}</button>
                 <button @click="activeTab='packing'" :class="activeTab==='packing'?'tab-active':''" class="whitespace-nowrap pb-1">行李</button>
+                <button @click="activeTab='document'" :class="activeTab==='document'?'tab-active':''" class="whitespace-nowrap pb-1">文件</button>
                 <button @click="activeTab='info'" :class="activeTab==='info'?'tab-active':''" class="whitespace-nowrap pb-1">航班住宿</button>
             </div>
         </header>
@@ -197,6 +198,23 @@
                 </div>
             </div>
 
+            <div v-if="activeTab === 'document'" class="p-6 space-y-6">
+                <h2 class="text-2xl font-light mb-6">電子票券</h2>
+                
+                <div v-for="(section, idx) in documents" :key="idx" class="glass-card rounded-2xl p-5 mb-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-4">{{ section.title }}</h3>
+                    <div class="space-y-3">
+                        <a v-for="(link, lIdx) in section.links" :key="lIdx" 
+                           :href="link.url" 
+                           target="_blank"
+                           class="flex items-center justify-between p-3 bg-gray-50 rounded-xl text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                            <span>{{ link.name }}</span>
+                            <span class="text-gray-400">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div v-else-if="activeTab === 'notes'" class="space-y-6">
                 <div class="mb-2">
                     <h2 class="text-2xl font-light">注意事項</h2>
@@ -212,7 +230,7 @@
                                 @click="blk.expanded = !blk.expanded"
                                 class="flex justify-between items-start gap-3 cursor-pointer select-none -mx-1 px-1 py-0.5 rounded-lg hover:bg-gray-50/80 transition-colors"
                             >
-                                <h4 class="text-sm font-medium text-gray-800 tracking-tight">{{ blk.subtitle }}</h4>
+                                <h4 class="text-xs font-medium text-gray-800 tracking-tight">{{ blk.subtitle }}</h4>
                                 <span class="text-[10px] text-gray-300 shrink-0 mt-0.5">{{ blk.expanded ? '▲' : '▼' }}</span>
                             </div>
                             <transition name="expand">
@@ -224,15 +242,15 @@
                                             <thead>
                                                 <tr class="border-b border-gray-200/80 bg-white/80 text-[10px] text-gray-400">
                                                     <th class="px-3 py-2 font-medium w-[24%]">{{ blk.tableHeaders?.h1 || '時段' }}</th>
-                                                    <th class="px-3 py-2 font-medium w-[30%]">{{ blk.tableHeaders?.h2 || '形式' }}</th>
+                                                    <th class="px-3 py-2 font-medium w-[45%]">{{ blk.tableHeaders?.h2 || '形式' }}</th>
                                                     <th class="px-3 py-2 font-medium">{{ blk.tableHeaders?.h3 || '說明' }}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr v-for="(row, ri) in blk.table" :key="ri" class="border-b border-gray-100/90 last:border-0 align-top">
                                                     <td class="px-3 py-2.5 text-gray-800 font-medium">{{ row.col1 }}</td>
-                                                    <td class="px-3 py-2.5">{{ row.col2 }}</td>
-                                                    <td class="px-3 py-2.5 leading-snug">{{ row.col3 }}</td>
+                                                    <td class="px-3 py-2.5 whitespace-pre-line" v-html="row.col2"></td>
+                                                    <td class="px-3 py-2.5 leading-snug whitespace-pre-line" v-html="row.col3"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -541,8 +559,8 @@
                             expanded: false 
                         },
                         { 
-                            time: 'TBD', 
-                            title: '巴特略之家 (Casa Batlló)(待購票)', 
+                            time: '14:45', 
+                            title: '巴特略之家 (Casa Batlló)(已購票)', 
                             category: '景點',
                             desc: `
                                 這是一棟沒有直線的「海洋之屋」。其外牆如龍鱗片，陽台似骷髏，內裝則充滿了人體工學與通風導流的設計巧思。<br>
@@ -794,7 +812,7 @@
 
                     {
                         date: '04.06 Mon',
-                        city: '巴塞隆納',
+                        city: 'Barcelona',
                         weatherTemp: 19,
                         mapImg: '0406.jpg',
                         events: [
@@ -884,7 +902,7 @@
                         
                     {
                         date: '04.07 Tue',
-                        city: 'Madrid',
+                        city: 'Barcelona/Madrid',
                         weatherTemp: 18,
                         mapImg: '0407.jpg',
                         events: [
@@ -893,7 +911,7 @@
                                 title: '前往馬德里 (iryo 高鐵 (06150))',
                                 category: '交通',
                                 desc: `
-                                    <b>搭乘說明：</b>預訂 iryo 高鐵班次 06150 (14:50 發車)，約 2.5 小時抵達馬德里 Atocha 車站。抵達前 20-30 分鐘建議抵達月台，以便通過安檢與報到。票面座位請確認，需攜帶護照，票務人員有可能抽查。<br><br>
+                                    <b>搭乘說明：</b>預訂 iryo 高鐵班次 06150 (14:50 發車)，預定17:50抵達馬德里 Atocha 車站。抵達前 20-30 分鐘建議抵達月台，以便通過安檢與報到。票面座位請確認，需攜帶護照，票務人員有可能抽查。<br><br>
                                     <b>交通方式：</b>建議提早搭地鐵前往車站：可搭 L3 綠線至 Sants 站，步行前往高鐵大廳。若行李多或遇下雨，可考慮預約計程車（Freenow/bolt），預估費時 15 分鐘（旺季留意交通狀況可能延遲）。<br><br>
                                     <b>乘車注意：</b>
                                     <ul class="pl-4 list-disc">
@@ -907,8 +925,8 @@
                             },
 
                             {
-                                time: '🍽️',
-                                title: 'La Maruca',
+                                time: '20:30',
+                                title: 'La Maruca (已訂位)',
                                 category: '美食',
                                 desc: `
                                     <b>餐廳介紹：</b>La Maruca 是馬德里知名的現代北西班牙餐廳，以來自坎塔布里亞（Cantabria）的經典家庭料理為主軸，以「高 CP 值、時髦裝潢、全天候供應」在當地行銷圈與美食圈建立了極強的品牌力。<br><br>
@@ -948,34 +966,88 @@
                         weatherTemp: 19,
                         mapImg: '0408.jpg',
                         events: [
+
                             {
-                                time: '10:30',
-                                title: '麗池公園 (Parque del Retiro)',
+                                time: '12:15',
+                                title: '馬德里皇宮 (Palacio Real de Madrid) (已購票)',
                                 category: '景點',
                                 desc: `
-                                    <b>景點介紹：</b>馬德里市中心最著名、最受歡迎的公園。園內擁有湖泊、雕塑、優雅的花園、小宮殿（如水晶宮 Palacio de Cristal），隨處可見當地人與旅客休閒放鬆。<br><br>
-                                    <b>散步體驗：</b>建議租船在人工湖中划船，或於園中長椅稍坐，欣賞花木與雕像。春日櫻花烏桕盛放，氣氛浪漫。<br><br>
-                                    <b>顧問 Tips：</b>上午人潮較少，治安良好但仍請保管隨身物品。賣藝街頭藝人表演豐富，適合慢遊。
-                                `,
-                                expanded: false
-                            },
-                            {
-                                time: '12:00',
-                                title: '普拉多美術館 (Museo del Prado)',
-                                category: '景點',
-                                desc: `
-                                    <b>世界級美術館：</b>西班牙藝術瑰寶，館藏西班牙、義大利、佛蘭德斯等歐洲經典大師作品。（Velázquez、Goya、El Greco、Rubens）<br><br>
-                                    <b>必看亮點：</b>
+                                    <b>西班牙皇室象徵：</b>馬德里皇宮又稱西班牙王宮，是歐洲最大、最壯麗的宮殿之一。現用於舉辦國事和儀典，皇室並不常居住於此。<br><br>
+                                    <b>參觀亮點：</b>
                                     <ul class="pl-4 list-disc">
-                                        <li>委拉斯蓋茲《宮女們》</li>
-                                        <li>戈雅系列—《裸體的瑪哈》、《1808年5月3日》</li>
-                                        <li>提香、魯本斯、波提切利等大師真跡</li>
+                                        <li>奢華宮殿廳室、畫廊、大理石樓梯、鏤金細工天花板</li>
+                                        <li>皇家武器館、藥局、花園與宮殿旁的阿穆德納主教座堂（Almudena）</li>
+                                        <li>
+                                            <b>重點必看收藏及介紹：</b>
+                                            <ul class="pl-4 list-disc mt-1">
+                                                <li><b>皇家王座廳（Salón del Trono）：</b> 欣賞宏偉的紅絨王座、鏡飾牆面與巨幅壁畫（包括 G. Tiepolo 天花板）</li>
+                                                <li><b>象牙與黃金裝飾的大型宴會廳、鏡廳：</b> 華麗陳設，見證宮廷生活與外交禮儀場所</li>
+                                                <li><b>皇家兵器博物館：</b> 展出西班牙王室歷代珍稀鎧甲、武器及騎士盔甲，是歐洲規模最大之一</li>
+                                                <li><b>藥局（Farmacia Real）：</b> 保存19世紀手工藥瓶、藥材與醫療器具，可見宮廷醫療文化</li>
+                                                <li><b>主教座堂（Catedral de la Almudena）：</b> 位於皇宮旁，新舊交融的馬德里主教堂，內部彩繪現代且獨特</li>
+                                                <li><b>皇室藝術珍藏：</b> 收藏戈雅（Goya）、貝拉斯蓋茲（Velázquez）、卡拉瓦喬（Caravaggio）等大師真跡，部分畫作僅於特展時開放</li>
+                                            </ul>
+                                        </li>
                                     </ul>
-                                    <b>參觀建議：</b>預購門票可省排隊時間；若行程有限，請事先挑選鎮館之寶優先瀏覽。<br><br>
-                                    <b>顧問 Tips：</b>背包需寄存，館內禁止拍照。備足時間（1.5-2小時），藝術迷更可安排半天細細品味。
+                                    <b>參觀建議：</b>建議提前線上購票，上午或午餐後入場人潮較少。全程約需1.5小時，提供導覽機與中文解說。<br><br>
+                                    <b>顧問 Tips：</b>不可攜帶大型背包入內，進入主體建築須接受安檢。攝影規範視展區而定，部分空間禁拍。
                                 `,
                                 expanded: false
                             },
+
+                            {
+                                time: '13:30',
+                                title: 'Plaza de la Villa（市政廣場）',
+                                category: '景點',
+                                desc: `
+                                    <b>馬德里歷史心臟：</b>Plaza de la Villa（市政廣場）是馬德里舊城區最具歷史氣息的廣場之一，過去曾是市政與集會中心。<br><br>
+                                    <b>周邊建築：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>Casa de la Villa（舊市政廳）：經典的17世紀建築，曾長期作為市政廳。</li>
+                                        <li>Casa de Cisneros：文藝復興風格，連結舊市政廳的歷史住宅。</li>
+                                        <li>Torre de los Lujanes：馬德里現存最古老的建築之一，帶有哥德式風格。</li>
+                                    </ul>
+                                    <b>廣場特色：</b>廣場上可欣賞到優雅的雕塑和石板路，氛圍安靜古樸。適合漫步感受馬德里的中世紀氣息，拍攝歷史建築全景。<br>
+                                    <b>顧問 Tips：</b>可與附近的主教座堂、馬約爾廣場串聯步行參觀，適合愛好歷史建築的旅人細細品味。
+                                `,
+                                expanded: false
+                            },
+                            {
+                                time: '14:00',
+                                title: '聖米蓋爾市場 (Mercado de San Miguel)',
+                                category: '美食',
+                                desc: `
+                                    <b>馬德里美食地標：</b>聖米蓋爾市場是馬德里最具代表性的美食市集，擁有百年歷史的鐵藝玻璃建築。匯集來自西班牙各地的特色小吃、葡萄酒與甜點，是現代與傳統交融的美食文化體驗地。<br><br>
+                                    <b>必吃特色：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>Tapa（各式西班牙小食）：生火腿、海鮮、橄欖、熟食小串等應有盡有。</li>
+                                        <li>Pintxos：北西班牙風味的麵包小點。</li>
+                                        <li>新鮮現切伊比利火腿（Jamón Ibérico）、西班牙奶酪與當地葡萄酒。</li>
+                                        <li>Churros、巧克力等甜點。</li>
+                                    </ul>
+                                    <b>建議體驗：</b>建議用散步方式一邊逛、一邊品嚐不同攤位，感受在地人與觀光客的熱鬧氛圍。<br>
+                                    <b>顧問 Tips：</b>午餐、傍晚時段人潮眾多，建議提前或錯峰前往。市場內大多為站食，方便快捷且環境衛生佳。
+                                `,
+                                expanded: false
+                            },
+                            {
+                                time: '14:45',
+                                title: '馬約爾廣場 (Plaza Mayor)',
+                                category: '景點',
+                                desc: `
+                                    <b>馬德里經典廣場：</b>Plaza Mayor 是西班牙最著名的封閉式長方形廣場之一，環繞著歷史拱廊、餐廳和咖啡館，是馬德里最具標誌性的露天社交空間。曾經舉辦過加冕、鬥牛與節慶活動。<br><br>
+                                    <b>拍照與觀察亮點：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>中央的費利佩三世騎馬雕像。</li>
+                                        <li>經典紅磚拱廊建築連綿，洋溢巴洛克風情。</li>
+                                        <li>廣場周圍有眾多咖啡館、露台，是休憩小憩、觀察市井風情的理想地。</li>
+                                    </ul>
+                                    <b>建議體驗：</b>適合順道品嚐馬德里經典「Calamari 夾麵包」（炸魷魚三明治）或咖啡，並拍下馬德里代表性建築背景合影。<br>
+                                    <b>顧問 Tips：</b>廣場區域為遊客熱門地區，請注意保管財物。建議與聖米蓋爾市場聯合步行參訪。
+                                `,
+                                expanded: false
+                            },
+
                             {
                                 time: '15:00',
                                 title: '太陽門廣場 (Puerta del Sol)',
@@ -989,17 +1061,6 @@
                                         <li>周邊有眾多購物、美食與咖啡館，適合漫步逛街順道小憩</li>
                                     </ul>
                                     <b>顧問 Tips：</b>注意人潮與扒手，傍晚時段拍照光線佳。
-                                `,
-                                expanded: false
-                            },
-                            {
-                                time: '傍晚',
-                                title: '德波神廟日落 (Templo de Debod)',
-                                category: '景點',
-                                desc: `
-                                    <b>景點介紹：</b>這座古埃及神廟由埃及政府贈予西班牙，是觀賞馬德里夕陽最著名的場所之一。<br><br>
-                                    <b>日落體驗：</b>黃昏時分，神廟倒映於水池與霞光中，美景令人難忘。環顧可見馬德里西側地平線，是情侶、攝影愛好者聚集之地。<br><br>
-                                    <b>顧問 Tips：</b>建議提前抵達占位，日落熱門時段人潮眾多。冬夏日落時間略有不同，可查詢當日預報調整行程。
                                 `,
                                 expanded: false
                             },
@@ -1094,7 +1155,7 @@
                         events: [
                             {
                                 time: '08:00',
-                                title: '馬德里-塞哥維亞 (搭公車)',
+                                title: '馬德里-塞哥維亞 (搭公車)(已購票)',
                                 category: '交通',
                                 desc: `
                                     從馬德里 Moncloa 車站搭乘 Avanza 巴士前往塞哥維亞，約需 1 小時 20 分鐘。巴士路線頻繁，建議事先線上購票選好時段與座位。<br><br>
@@ -1154,8 +1215,8 @@
                             },
 
                             {
-                                time: 'TBD',
-                                title: "Jose Maria's Restaurant",
+                                time: '13:00',
+                                title: "Jose Maria's Restaurant (已訂位)",
                                 category: '美食',
                                 mustEat: "Restaurante Jose Maria",
                                 desc: `這家餐廳在塞哥維亞的地位等同於「味覺的守護者」。不同於一般觀光餐廳，José María 先生親自改良了烤乳豬的標準化流程，使其皮脆如薄冰、肉嫩如豆腐。<br><br>
@@ -1202,16 +1263,92 @@
                             }
                         ]
                     },
+
+
+                    
+                    {
+                        date: '04.10 Fri',
+                        city: 'Madrid',
+                        weatherTemp: 20,
+                        mapImg: '0410.jpg',
+                        events: [
+                        {
+                                time: '10:00',
+                                title: '麗池公園 (Parque del Retiro)',
+                                category: '景點',
+                                desc: `
+                                    <b>景點介紹：</b>馬德里市中心最著名、最受歡迎的公園。園內擁有湖泊、雕塑、優雅的花園、小宮殿（如水晶宮 Palacio de Cristal），隨處可見當地人與旅客休閒放鬆。<br><br>
+                                    <b>散步體驗：</b>建議租船在人工湖中划船，或於園中長椅稍坐，欣賞花木與雕像。春日櫻花烏桕盛放，氣氛浪漫。<br><br>
+                                    <b>顧問 Tips：</b>上午人潮較少，治安良好但仍請保管隨身物品。賣藝街頭藝人表演豐富，適合慢遊。
+                                `,
+                                expanded: false
+                            },
+
+                        {
+                                time: '11:00',
+                                title: '普拉多美術館 (Museo del Prado) (已購票)',
+                                category: '景點',
+                                desc: `
+                                    <b>世界級美術館：</b>西班牙藝術瑰寶，館藏西班牙、義大利、佛蘭德斯等歐洲經典大師作品。（Velázquez、Goya、El Greco、Rubens）<br><br>
+                                    <b>必看亮點：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>委拉斯蓋茲《宮女們》</li>
+                                        <li>戈雅系列—《裸體的瑪哈》、《1808年5月3日》</li>
+                                        <li>提香、魯本斯、波提切利等大師真跡</li>
+                                    </ul>
+                                    <b>參觀建議：</b>預購門票可省排隊時間；若行程有限，請事先挑選鎮館之寶優先瀏覽。<br><br>
+                                    <b>顧問 Tips：</b>背包需寄存，館內禁止拍照。備足時間（1.5-2小時），藝術迷更可安排半天細細品味。
+                                `,
+                                expanded: false
+                            },
+
+
+                            {
+                                time: '12:00',
+                                title: 'Plaza de Cibeles（西貝萊斯廣場）',
+                                category: '景點',
+                                desc: `
+                                    <b>馬德里城市象徵：</b>西貝萊斯廣場是首都最著名的地標之一，也是馬德里主要交通樞紐。中間的西貝萊斯女神噴泉（Fuente de Cibeles）是皇馬球迷慶典場地，象徵勝利和豐饒。<br><br>
+                                    <b>四座經典建築環繞：</b>
+                                    <ul class="pl-4 list-disc">
+                                        <li>壯麗的馬德里市政廳（Palacio de Cibeles）——白色宮殿式建築，現為市政廳與Cibeles Cultural Center，可付費登頂觀景台俯瞰全城。</li>
+                                        <li>Banco de España（西班牙銀行總部）——歷史宏偉金融地標。</li>
+                                        <li>Palacio de Buenavista（西班牙陸軍司令部）</li>
+                                        <li>Palacio de Linares（西班牙美洲之家）</li>
+                                    </ul>
+                                    <b>建議體驗：</b>廣場人潮絡繹不絕，建議早上拍攝壯觀建築和噴泉，若時間充裕可進入市政廳觀景台俯瞰馬德里城市天際線。<br>
+                                    <b>顧問 Tips：</b>西貝萊斯廣場鄰近麗池公園與格蘭大道，建議安排為步行路線一部分。夜間燈光點亮後氛圍浪漫，適合攝影愛好者。
+                                `,
+                                expanded: false
+                            }
+                        ]
+                    },
+
+                    {
+                        date: '04.11 Sat',
+                        city: 'Madrid',
+                        weatherTemp: 22,
+                        mapImg: '0411.jpg',
+                        events: [
+                            {
+                                time: '11:05',
+                                title: 'MAD ➔ PVG (MU710)',
+                                category: '交通',
+                                desc: `搭乘東方航空MU710班機，由馬德里飛往上海浦東國際機場。建議提早抵達機場辦理登機手續。<br><b>退稅建議：</b>如有購買可退稅商品，請於離境當天提早抵達機場，先至退稅櫃臺（Tax Refund/Global Blue/Planet Tax Free 等）辦理退稅手續與蓋章，記得隨身攜帶購物發票、退稅單和未拆封商品以供查驗。手續完成後可選擇現金或信用卡退稅方式。高峰時段退稅櫃臺較擁擠，請預留充分時間處理。`,
+                                expanded: false
+                            }
+                        ]
+                    },
                     {
                         date: '04.12 Sun',
-                        city: 'Madrid',
+                        city: 'Shanghai/Taipei',
                         weatherTemp: 20,
                         mapImg: '0412.jpg',
                         events: [
                             {
-                                time: '21:00',
-                                title: 'MAD ➔ PVG (MU710)',
-                                category: '交通',
+                                time: '09:10',
+                                title: 'PVG ➔ TSA  (FM801)',
+                                category: '上海轉機回台灣(松山)',
                                 desc: `賦歸。`,
                                 expanded: false
                             }
@@ -1229,13 +1366,25 @@
                     { name: '長途飛行', items: [{text:'拖鞋', checked:false}, {text:'眼罩', checked:false}, {text:'耳塞', checked:false}, {text:'襪子', checked:false}] }
                 ]);
 
+                // 文件分類：已購票券連結
+                const document = ref([
+                
+                        { title: '機票與交通', 
+                        links: [
+                        {name: '聖家堂電子票',
+                        url: 'https://example.com/sagrada-ticket.pdf'}
+                    ]},
+
+                    // 可依需求繼續新增 ...
+                ]);
+
                 const notesSections = ref([
                     {
                         title: '證件與錢財',
                         blocks: [
                             {
                                 subtitle: '基本習慣',
-                                expanded: true,
+                                expanded: false,
                                 bullets: [
                                     '護照與登機證分開收納，手機留存證件照片備用。',
                                     '刷卡留意是否為歐元計價；小額現金備用於市集或只收現金的店家。',
@@ -1351,10 +1500,49 @@
                     {
                         title: '省錢攻略',
                         blocks: [
-                            {
-                                subtitle: '餐飲策略：午餐吃好，晚餐吃巧',
+
+                        {
+                                subtitle: '刷卡攻略',
                                 expanded: false,
-                                intro: '西班牙人的飲食重點在於午間，掌握以下原則可大幅降低伙食費：',
+                                tableHeaders: { h1: '卡片', h2: '回饋', h3: 'Remark' },
+                                intro: '適用於歐洲的高回饋信用卡',
+                                table: [
+                                    {
+                                        col1: '永豐幣倍卡',
+                                        col2: '1.2% 國外無上限<br>2.4% 上限800/帳單週期',
+                                        col3: '歐洲 <b>實體商店</b> 消費'
+                                    },
+                                    {
+                                        col1: '國泰cube卡',
+                                        col2: '3% 無上限',
+                                        col3: '切換「趣旅行」+ 歐洲 <b>實體商店</b> 消費'
+                                    },
+                                    {
+                                        col1: '台新 Richart卡',
+                                        col2: '3.3% 無上限',
+                                        col3: '切換「趣旅刷」+ 歐洲實體/線上商店消費'
+                                    },
+                                    {
+                                        col1: '永豐大戶卡',
+                                        col2: '2% 國外無上限 <br> 2.5%上限400/帳單週期',
+                                        col3: ''
+                                    },
+                                    {
+                                        col1: '富邦COSTCO卡',
+                                        col2: '1%無上限<br> 4%上限600/帳單週期',
+                                        col3: '歐洲 <b>實體商店</b> 消費'
+                                    },
+                                    {
+                                        col1: '星展 eco 永續卡',
+                                        col2: '1% 無上限<br>4% 600/帳單週期<br>2.5% 300/月任務加碼',
+                                        col3: '任務: 星禧數位帳戶存戶總資產連續4個月達等值新台幣 30 萬元以上 + 設定星禧數位帳戶扣繳本行信用卡帳款+指定eco卡別綁定行動支付消費'
+                                    }
+                                ],
+                            },
+                            {
+                                subtitle: '餐飲策略',
+                                expanded: false,
+                                intro: '<b>午餐吃好，晚餐吃巧</b>  |  西班牙人的飲食重點在於午間，掌握以下原則可大幅降低伙食費：',
                                 table: [
                                     {
                                         col1: '午餐（主餐）',
@@ -1460,6 +1648,7 @@
                         ]
                     },
 
+
                     {
                         title: '作息與飲食',
                         lines: [
@@ -1526,6 +1715,7 @@
                     schedule,
                     stayInfo,
                     packingList,
+                    document,
                     notesSections,
                     basicSpanish,
                     speakSpanish,
