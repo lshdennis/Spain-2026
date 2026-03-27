@@ -145,21 +145,14 @@
                 </section>
             </div>
 
-<div class="tab-content" id="packlist-tab">
-    <iframe src="https://lshdennis.github.io/package-list/" 
-            style="width: 100%; height: 80vh; border: none; border-radius: 12px;">
-    </iframe>
-</div>
-			
             <div v-else-if="activeTab === 'packing'" class="space-y-6">
-
-                <div class="tab-content" id="packlist-tab">
-    		<iframe src="https://lshdennis.github.io/package-list/" 
-            		style="width: 100%; height: 80vh; border: none; border-radius: 12px;">
-  		  </iframe>
-	 </div>
-
-            </div>
+                <div v-for="cat in packingList" :key="cat.name" class="glass-card rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic">{{cat.name}}</h3>
+                    <div class="space-y-4">
+                        <div v-for="item in cat.items" @click="item.checked = !item.checked" class="flex items-center space-x-3 cursor-pointer">
+                            <div class="w-4 h-4 border border-gray-300 rounded flex items-center justify-center">
+                                <div v-if="item.checked" class="w-2 h-2 bg-gray-800 rounded-sm"></div>
+                            </div>
                             <span :class="item.checked ? 'line-through text-gray-300' : 'text-sm text-gray-600'">{{item.text}}</span>
                         </div>
                     </div>
@@ -534,7 +527,7 @@
                                 <details>
                                     <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
                                     <div style="margin:10px 0;">
-                                        <img src="sagrada.jepg" alt="聖家堂打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                        <img src="sagrada.jpg" alt="聖家堂打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
                                     </div>
                                 </details>
                                 <!-- 可收合圖片區塊 End -->
@@ -577,7 +570,7 @@
                                 <details>
                                     <summary style="cursor:pointer;font-weight:bold;">點擊展開/收合照片參考</summary>
                                     <div style="margin:10px 0;">
-                                        <img src="casabatllo.jepg" alt="Casa Batlló打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
+                                        <img src="casabatllo.jpg" alt="Casa Batlló打卡攻略" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:8px;">
                                     </div>
                                 </details>
                                 <!-- 可收合圖片區塊 End -->
