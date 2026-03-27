@@ -145,6 +145,12 @@
                 </section>
             </div>
 
+<div class="tab-content" id="packlist-tab">
+    <iframe src="https://lshdennis.github.io/package-list/" 
+            style="width: 100%; height: 80vh; border: none; border-radius: 12px;">
+    </iframe>
+</div>
+			
             <div v-else-if="activeTab === 'packing'" class="space-y-6">
                 <div v-for="cat in packingList" :key="cat.name" class="glass-card rounded-2xl p-6 shadow-sm">
                     <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic">{{cat.name}}</h3>
