@@ -152,8 +152,9 @@
                             </div>
                             <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
                             <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
-                                <span>07:50</span>
-                                <span>09:50</span>
+                                <span>18:40</span>
+                                <span>20:40</span>
+                                <span class="text-[10px] text-gray-400 mt-1 block">2h</span>
                             </div>
                         </div>
                         <!-- Boarding Card 2 -->
@@ -171,8 +172,9 @@
                             </div>
                             <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
                             <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
-                                <span>00:10</span>
-                                <span>08:15</span>
+                                <span>00:40</span>
+                                <span>08:05</span>
+                                <span class="text-[10px] text-gray-400 mt-1 block">13h25m</span>
                             </div>
                         </div>
                         <!-- Boarding Card 3 -->
@@ -190,8 +192,9 @@
                             </div>
                             <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
                             <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
-                                <span>13:55</span>
-                                <span>06:30+1</span>
+                                <span>11:05</span>
+                                <span>05:50</span>
+                                <span class="text-[10px] text-gray-400 mt-1 block">12h45m</span>
                             </div>
                         </div>
                         <!-- Boarding Card 4 -->
@@ -209,8 +212,9 @@
                             </div>
                             <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
                             <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
-                                <span>09:45</span>
-                                <span>12:10</span>
+                                <span>09:10</span>
+                                <span>11:00</span>
+                                <span class="text-[10px] text-gray-400 mt-1 block">1h50m</span>
                             </div>
                         </div>
                     </div>
@@ -245,57 +249,68 @@
                     </ul>
                 </div>
                 <div v-for="cat in basicSpanish" :key="cat.title" class="glass-card rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">{{ cat.title }}</h3>
-                    <div class="space-y-0">
-                        <div
-                            v-for="(row, ri) in cat.rows"
-                            :key="ri"
-                            class="flex justify-between items-start gap-3 py-3 border-b border-gray-100/90 last:border-0 text-xs"
-                        >
-                            <div class="flex items-start gap-2 min-w-0 flex-1">
-                                <button
-                                    type="button"
-                                    @click.stop="speakSpanish(row.es)"
-                                    class="shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-[12px] leading-none text-gray-500 shadow-sm hover:border-amber-300/80 hover:bg-amber-50/50 hover:text-amber-900 active:scale-95 transition"
-                                    title="聽發音"
-                                    aria-label="播放西語發音"
-                                >
-                                    🔊
-                                </button>
-                                <span class="font-medium text-gray-800 leading-snug pt-0.5">{{ row.es }}</span>
-                            </div>
-                            <span class="text-gray-500 text-right leading-snug shrink-0 max-w-[48%]">{{ row.zh }}</span>
-                        </div>
+                    <div 
+                        @click="cat.expanded = !cat.expanded" 
+                        class="flex justify-between items-center cursor-pointer select-none mb-2 tracking-widest uppercase italic border-b pb-2 px-1 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                        <h3 class="text-xs font-bold text-gray-400">{{ cat.title }}</h3>
+                        <span class="text-[10px] text-gray-300 ml-2">{{ cat.expanded ? '▲' : '▼ 展開' }}</span>
                     </div>
+            
+                    <transition name="expand">
+                        <div v-show="cat.expanded" class="space-y-0 mt-2">
+                            <div
+                                v-for="(row, ri) in cat.rows"
+                                :key="ri"
+                                class="flex justify-between items-start gap-3 py-3 border-b border-gray-100/90 last:border-0 text-xs"
+                            >
+                                <div class="flex items-start gap-2 min-w-0 flex-1">
+                                    <button
+                                        type="button"
+                                        @click.stop="speakSpanish(row.es)"
+                                        class="shrink-0 mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-white text-[12px] text-gray-500 shadow-sm active:scale-95 transition"
+                                    >
+                                        🔊
+                                    </button>
+                                    <span class="font-medium text-gray-800 leading-snug pt-0.5">{{ row.es }}</span>
+                                </div>
+                                <span class="text-gray-500 text-right leading-snug shrink-0 max-w-[48%]">{{ row.zh }}</span>
+                            </div>
+                        </div>
+                    </transition>
                 </div>
             </div>
 
-            <div v-if="activeTab === 'document'" class="p-6 space-y-6">
-                <h2 class="text-xl font-light mb-6">電子票券</h2>
-                <div v-for="(section, idx) in document" :key="idx" class="glass-card rounded-2xl p-5 mb-4">
-                    <h3 class="text-sm font-medium text-gray-900 mb-4">{{ section.title }}</h3>
-                    <div class="space-y-3">
-                        <a v-for="(link, lIdx) in section.links" :key="lIdx"
-                           :href="link.url"
-                           target="_blank"
-                           class="flex items-center justify-between p-3 bg-gray-50 rounded-xl text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                            <span>{{ link.name }}</span>
-                            <span class="text-gray-400">→</span>
-                        </a>
-                    </div>
+            <div v-if="activeTab === 'document'" class="space-y-6">
+                <div class="mb-2 px-6">
+                    <h2 class="text-2xl font-light">電子票券</h2>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Tickets</p>
                 </div>
-                
-                <div v-for="(section, idx) in documents" :key="idx" class="glass-card rounded-2xl p-4 mb-3">
-                    <h3 class="text-[10px] font-medium text-gray-900 mb-3">{{ section.title }}</h3>
-                    <div class="space-y-2">
-                        <a v-for="(link, lIdx) in section.links" :key="lIdx" 
-                           :href="link.url" 
-                           target="_blank"
-                           class="flex items-center justify-between p-2 bg-gray-50 rounded-xl text-[10px] text-gray-700 hover:bg-gray-100 transition-colors">
-                            <span>{{ link.name }}</span>
-                            <span class="text-gray-400">→</span>
-                        </a>
+            
+                <div v-for="section in document" :key="section.title" class="glass-card rounded-2xl p-6 shadow-sm mx-4">
+                    <div 
+                        @click="section.expanded = !section.expanded"
+                        class="flex justify-between items-center cursor-pointer select-none mb-2 tracking-widest uppercase italic border-b pb-2 px-1 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                        <h3 class="text-xs font-bold text-gray-400">{{ section.title }}</h3>
+                        <span class="text-[10px] text-gray-300 ml-2">{{ section.expanded ? '▲' : '▼ 展開' }}</span>
                     </div>
+            
+                    <transition name="expand">
+                        <div v-show="section.expanded" class="mt-4">
+                            <ul class="text-xs text-gray-600 leading-relaxed space-y-3 pl-0">
+                                <li v-for="(link, lIdx) in section.links" :key="lIdx" class="flex gap-2 justify-between items-center">
+                                    <div class="flex gap-2 items-center">
+                                        <span class="text-gray-400 shrink-0">•</span>
+                                        <a :href="link.url" target="_blank" class="text-gray-700 hover:underline hover:text-amber-700 transition truncate" style="max-width:180px">
+                                            {{ link.name }}
+                                        </a>
+                                    </div>
+                                    <a :href="link.url" target="_blank" class="text-gray-400 hover:text-amber-500 text-sm">→</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </transition>
                 </div>
             </div>
 
@@ -304,19 +319,32 @@
                     <h2 class="text-2xl font-light">注意事項</h2>
                     <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Reminders</p>
                 </div>
-                <div v-for="sec in notesSections" :key="sec.title" class="glass-card rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">{{ sec.title }}</h3>
 
-                    <template v-if="sec.blocks">
-                        <div v-for="(blk, bi) in sec.blocks" :key="bi" class="mb-4 last:mb-0 border-b border-gray-100/90 last:border-0 pb-4 last:pb-0">
-                            <div
-                                v-if="blk.subtitle"
-                                @click="blk.expanded = !blk.expanded"
-                                class="flex justify-between items-start gap-3 cursor-pointer select-none -mx-1 px-1 py-0.5 rounded-lg hover:bg-gray-50/80 transition-colors"
-                            >
-                                <h4 class="text-xs font-medium text-gray-800 tracking-tight">{{ blk.subtitle }}</h4>
-                                <span class="text-[10px] text-gray-300 shrink-0 mt-0.5">{{ blk.expanded ? '▲' : '▼' }}</span>
-                            </div>
+
+                <div v-for="sec in notesSections" :key="sec.title" class="glass-card rounded-2xl p-6 shadow-sm">
+                    <div
+                        @click="sec.expanded = !sec.expanded"
+                        class="flex justify-between items-center cursor-pointer select-none mb-2 tracking-widest uppercase italic border-b pb-2 px-1 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                        <h3 class="text-xs font-bold text-gray-400">{{ sec.title }}</h3>
+                        <span class="text-[10px] text-gray-300 ml-2">{{ sec.expanded ? '▲' : '▼ 展開' }}</span>
+                    </div>
+
+                    <transition name="expand">
+                        <div v-show="sec.expanded" class="mt-4">
+                            <template v-if="sec.blocks">
+                                <div v-for="(blk, bi) in sec.blocks" :key="bi" class="mb-4 last:mb-0 border-b border-gray-100/90 last:border-0 pb-4 last:pb-0">
+                                    <div
+                                        v-if="blk.subtitle"
+                                        @click="blk.expanded = !blk.expanded"
+                                        class="flex justify-between items-start gap-3 cursor-pointer select-none -mx-1 px-1 py-1 rounded-lg hover:bg-gray-50/80 transition-colors"
+                                    >
+                                        <h4 class="text-xs font-medium text-gray-800 tracking-tight">{{ blk.subtitle }}</h4>
+                                        <span class="text-[10px] text-gray-300 shrink-0 mt-0.5">{{ blk.expanded ? '▲' : '▼' }}</span>
+                                    </div>
+
+
+
                             <transition name="expand">
                                 <div v-show="blk.subtitle ? blk.expanded : true" class="space-y-3" :class="blk.subtitle ? 'pt-3' : ''">
                                     <p v-if="blk.intro" class="text-xs text-gray-600 leading-relaxed" v-html="blk.intro"></p>
@@ -1473,6 +1501,7 @@
                 const notesSections = ref([
                     {
                         title: '證件與錢財',
+                        expanded: false,
                         blocks: [
                             {
                                 subtitle: '基本習慣',
@@ -1762,6 +1791,7 @@
                 const basicSpanish = ref([
                     {
                         title: '招呼與禮貌',
+                        expanded: false, // 加入展開/收合狀態
                         rows: [
                             { es: 'Hola', zh: '你好' },
                             { es: 'Buenos días', zh: '早安' },
@@ -1774,6 +1804,7 @@
                     },
                     {
                         title: '餐廳常用',
+                        expanded: false, // 加入展開/收合狀態
                         rows: [
                             { es: 'Menú del día', zh: '每日套餐（午餐特餐）' },
                             { es: 'La cuenta, por favor', zh: '請結帳' },
@@ -1784,16 +1815,27 @@
                         ]
                     },
                     {
+                        // 若要實現「收闔」功能，需在每個區塊加入一個屬性如 expanded，並於畫面上加按鈕/標題點擊事件來切換 expanded 狀態，根據 expanded 決定 rows 的顯示與否。
+                        // 範例如下（資料結構維持不變）：
+
                         title: '購物與問路',
+                        expanded: false, // 維持這個屬性，作為展開/收合控制
                         rows: [
                             { es: '¿Cuánto cuesta?', zh: '多少錢？' },
                             { es: '¿Dónde está…?', zh: '…在哪裡？' },
                             { es: 'No entiendo', zh: '我聽不懂' },
                             { es: '¿Habla inglés?', zh: '您會說英文嗎？' }
                         ]
+
+                        // 前端畫面上：
+                        // 1. 讓標題（cat.title）可點擊，點擊時將 cat.expanded = !cat.expanded
+                        // 2. 用 v-show 或 v-if="cat.expanded" 控制 rows 的顯示/隱藏
+                        // 3. 可加展開/收合圖示（如 ▲▼）提示狀態
+
                     },
                     {
                         title: '緊急用語',
+                        expanded: false, // 加入展開/收合狀態
                         rows: [
                             { es: 'Policía', zh: '警察' },
                             { es: '¡Ayuda!', zh: '救命！／幫忙！' },
