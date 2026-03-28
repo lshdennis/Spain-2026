@@ -134,13 +134,85 @@
                     </div>
                 </section>
                 
-                <section class="glass-card rounded-2xl p-6">
+                <section>
                     <h3 class="text-xs font-bold text-gray-400 mb-4 tracking-widest uppercase italic border-b pb-1">Flights</h3>
-                    <div class="text-[11px] font-mono space-y-2">
-                        <div class="flex justify-between"><span>04/02 MU5006</span><span>TPE-PVG</span></div>
-                        <div class="flex justify-between"><span>04/03 MU249</span><span>PVG-BCN</span></div>
-                        <div class="flex justify-between"><span>04/12 MU710</span><span>MAD-PVG</span></div>
-                        <div class="flex justify-between"><span>04/12 FM801</span><span>PVG-TSA</span></div>
+                    <div class="grid gap-4">
+                        <!-- Boarding Card 1 -->
+                        <div class="boarding-card glass-card rounded-2xl px-6 py-4 shadow flex flex-col md:flex-row justify-between items-center overflow-hidden relative font-mono text-[11px] bg-gradient-to-br from-sky-100/60 to-white border-2 border-solid border-blue-200">
+                            <div class="flex items-center gap-6 flex-1">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold mb-1">04/02</div>
+                                    <div class="text-[12px] font-semibold tracking-widest text-blue-700">MU5006</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl font-extrabold text-gray-800">TPE</span>
+                                    <span class="mx-2 text-blue-400 text-lg">✈️</span>
+                                    <span class="text-2xl font-extrabold text-gray-800">PVG</span>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
+                            <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
+                                <span>07:50</span>
+                                <span>09:50</span>
+                            </div>
+                        </div>
+                        <!-- Boarding Card 2 -->
+                        <div class="boarding-card glass-card rounded-2xl px-6 py-4 shadow flex flex-col md:flex-row justify-between items-center overflow-hidden relative font-mono text-[11px] bg-gradient-to-br from-sky-100/60 to-white border-2 border-solid border-blue-200">
+                            <div class="flex items-center gap-6 flex-1">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold mb-1">04/03</div>
+                                    <div class="text-[12px] font-semibold tracking-widest text-blue-700">MU249</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl font-extrabold text-gray-800">PVG</span>
+                                    <span class="mx-2 text-blue-400 text-lg">✈️</span>
+                                    <span class="text-2xl font-extrabold text-gray-800">BCN</span>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
+                            <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
+                                <span>00:10</span>
+                                <span>08:15</span>
+                            </div>
+                        </div>
+                        <!-- Boarding Card 3 -->
+                        <div class="boarding-card glass-card rounded-2xl px-6 py-4 shadow flex flex-col md:flex-row justify-between items-center overflow-hidden relative font-mono text-[11px] bg-gradient-to-br from-sky-100/60 to-white border-2 border-solid border-blue-200">
+                            <div class="flex items-center gap-6 flex-1">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold mb-1">04/11</div>
+                                    <div class="text-[12px] font-semibold tracking-widest text-blue-700">MU710</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl font-extrabold text-gray-800">MAD</span>
+                                    <span class="mx-2 text-blue-400 text-lg">✈️</span>
+                                    <span class="text-2xl font-extrabold text-gray-800">PVG</span>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
+                            <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
+                                <span>13:55</span>
+                                <span>06:30+1</span>
+                            </div>
+                        </div>
+                        <!-- Boarding Card 4 -->
+                        <div class="boarding-card glass-card rounded-2xl px-6 py-4 shadow flex flex-col md:flex-row justify-between items-center overflow-hidden relative font-mono text-[11px] bg-gradient-to-br from-sky-100/60 to-white border-2 border-solid border-blue-200">
+                            <div class="flex items-center gap-6 flex-1">
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold mb-1">04/12</div>
+                                    <div class="text-[12px] font-semibold tracking-widest text-blue-700">FM801</div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl font-extrabold text-gray-800">PVG</span>
+                                    <span class="mx-2 text-blue-400 text-lg">✈️</span>
+                                    <span class="text-2xl font-extrabold text-gray-800">TSA</span>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent mx-4 rounded-full"></div>
+                            <div class="mt-2 md:mt-0 min-w-[50px] text-[13px] text-right text-blue-700 font-semibold tracking-widest flex flex-col items-end">
+                                <span>09:45</span>
+                                <span>12:10</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
