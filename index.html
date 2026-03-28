@@ -272,6 +272,18 @@
 
             <div v-if="activeTab === 'document'" class="p-6 space-y-6">
                 <h2 class="text-2xl font-light mb-6">電子票券</h2>
+                <div v-for="(section, idx) in document" :key="idx" class="glass-card rounded-2xl p-5 mb-4">
+                    <h3 class="text-sm font-medium text-gray-900 mb-4">{{ section.title }}</h3>
+                    <div class="space-y-3">
+                        <a v-for="(link, lIdx) in section.links" :key="lIdx"
+                           :href="link.url"
+                           target="_blank"
+                           class="flex items-center justify-between p-3 bg-gray-50 rounded-xl text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                            <span>{{ link.name }}</span>
+                            <span class="text-gray-400">→</span>
+                        </a>
+                    </div>
+                </div>
                 
                 <div v-for="(section, idx) in documents" :key="idx" class="glass-card rounded-2xl p-5 mb-4">
                     <h3 class="text-sm font-medium text-gray-900 mb-4">{{ section.title }}</h3>
@@ -1444,7 +1456,7 @@
                         { title: '機票與交通', 
                         links: [
                         {name: '聖家堂電子票',
-                        url: 'https://example.com/sagrada-ticket.pdf'}
+                        url: 'sagrada-ticket.pdf'}
                     ]},
 
                     // 可依需求繼續新增 ...
